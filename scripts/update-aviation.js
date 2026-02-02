@@ -50,20 +50,26 @@ async function run() {
     KRAL: { name: "Riverside Municipal" }
   };
 
+  const airportEntries = stations.map((code) => [
+    code,
+    {
+      name: airports[code].name,
+      metar: metarById[code]?.raw || "",
+      metarTime: metarById[code]?.time || "",
+      taf: tafById[code]?.raw || "",
+      tafTime: tafById[code]?.time || ""
+    }
+  ]);
+
+  const times = airportEntries.flatMap(([, data]) => [data.metarTime, data.tafTime]).filter(Boolean);
+  const latestMillis = times
+    .map((value) => new Date(value).getTime())
+    .filter((value) => !Number.isNaN(value))
+    .sort((a, b) => b - a)[0];
+
   const payload = {
-    updated: new Date().toISOString(),
-    airports: Object.fromEntries(
-      stations.map((code) => [
-        code,
-        {
-          name: airports[code].name,
-          metar: metarById[code]?.raw || "",
-          metarTime: metarById[code]?.time || "",
-          taf: tafById[code]?.raw || "",
-          tafTime: tafById[code]?.time || ""
-        }
-      ])
-    )
+    updated: latestMillis ? new Date(latestMillis).toISOString() : new Date().toISOString(),
+    airports: Object.fromEntries(airportEntries)
   };
 
   const outPath = path.join(__dirname, "..", "data", "aviation.json");
