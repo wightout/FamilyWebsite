@@ -27,6 +27,38 @@
   </header>
 
   <main>
+    <section id="weather" class="section weather">
+      <div class="section-heading">
+        <h3>Local METAR &amp; TAF</h3>
+        <p>Simple, current reports for the airports you care about most.</p>
+      </div>
+      <div class="wx-single">
+        <div class="wx-select">
+          <label for="airportSelect">Choose airport</label>
+          <select id="airportSelect">
+            <option value="KPOC" selected>Brackett Field (KPOC)</option>
+            <option value="KCCB">Cable Airport (KCCB)</option>
+            <option value="KRAL">Riverside Municipal (KRAL)</option>
+          </select>
+        </div>
+        <article class="wx-card">
+          <div class="wx-header">
+            <h4 id="wxName">Brackett Field</h4>
+            <span class="wx-ident" id="wxIdent">KPOC</span>
+          </div>
+          <div class="wx-block">
+            <p class="wx-label">METAR</p>
+            <p class="wx-text" id="wxMetar">Loading latest METAR...</p>
+          </div>
+          <div class="wx-block">
+            <p class="wx-label">TAF</p>
+            <p class="wx-text" id="wxTaf">Loading latest TAF...</p>
+          </div>
+        </article>
+      </div>
+      <p class="fineprint">Hook this to live METAR/TAF data when you’re ready.</p>
+    </section>
+
     <section class="hero">
       <div class="hero-copy">
         <p class="eyebrow">Mid-century calm • Jet-age energy</p>
@@ -50,7 +82,7 @@
           </div>
           <div>
             <p class="meta-label">Tracking Radius</p>
-            <p class="meta-value">50 miles • 71 airports</p>
+            <p class="meta-value">50 miles • Top 15 list</p>
           </div>
           <div>
             <p class="meta-label">Weather Watch</p>
@@ -94,62 +126,10 @@
       </div>
     </section>
 
-    <section id="weather" class="section weather">
-      <div class="section-heading">
-        <h3>Local METAR &amp; TAF</h3>
-        <p>Simple, current reports for Brackett, Cable, and Riverside.</p>
-      </div>
-      <div class="wx-grid">
-        <article class="wx-card">
-          <div class="wx-header">
-            <h4>Brackett Field</h4>
-            <span class="wx-ident">KPOC</span>
-          </div>
-          <div class="wx-block">
-            <p class="wx-label">METAR</p>
-            <p class="wx-text">Loading latest METAR...</p>
-          </div>
-          <div class="wx-block">
-            <p class="wx-label">TAF</p>
-            <p class="wx-text">Loading latest TAF...</p>
-          </div>
-        </article>
-        <article class="wx-card">
-          <div class="wx-header">
-            <h4>Cable Airport</h4>
-            <span class="wx-ident">KCCB</span>
-          </div>
-          <div class="wx-block">
-            <p class="wx-label">METAR</p>
-            <p class="wx-text">Loading latest METAR...</p>
-          </div>
-          <div class="wx-block">
-            <p class="wx-label">TAF</p>
-            <p class="wx-text">Loading latest TAF...</p>
-          </div>
-        </article>
-        <article class="wx-card">
-          <div class="wx-header">
-            <h4>Riverside Municipal</h4>
-            <span class="wx-ident">KRAL</span>
-          </div>
-          <div class="wx-block">
-            <p class="wx-label">METAR</p>
-            <p class="wx-text">Loading latest METAR...</p>
-          </div>
-          <div class="wx-block">
-            <p class="wx-label">TAF</p>
-            <p class="wx-text">Loading latest TAF...</p>
-          </div>
-        </article>
-      </div>
-      <p class="fineprint">Hook this to live METAR/TAF data when you’re ready.</p>
-    </section>
-
     <section id="airports" class="section airports">
       <div class="section-heading">
-        <h3>Airports Within 50 Miles of 91767</h3>
-        <p>Sorted by distance from the ZIP centroid. Add a star when you plan a visit.</p>
+        <h3>Top 15 Airports Within 50 Miles of 91767</h3>
+        <p>Sorted by distance from the ZIP centroid.</p>
       </div>
       <div class="table-card">
         <table>
@@ -178,66 +158,10 @@
             <tr><td>Crystal Airport</td><td>Llano</td><td>46CN</td><td>small airport</td><td>28.3 mi</td></tr>
             <tr><td>San Bernardino International Airport</td><td>San Bernardino</td><td>KSBD</td><td>large airport</td><td>28.7 mi</td></tr>
             <tr><td>John Wayne Orange County International Airport</td><td>Santa Ana</td><td>KSNA</td><td>large airport</td><td>29.1 mi</td></tr>
-            <tr><td>Black Butte Airfield</td><td>Llano</td><td>US-1878</td><td>small airport</td><td>29.6 mi</td></tr>
-            <tr><td>Long Beach International Airport</td><td>Long Beach</td><td>KLGB</td><td>large airport</td><td>29.8 mi</td></tr>
-            <tr><td>Oasis Airport</td><td>Phelan</td><td>US-1882</td><td>small airport</td><td>30.0 mi</td></tr>
-            <tr><td>Brian Ranch Airport</td><td>Palmdale</td><td>CL13</td><td>small airport</td><td>30.0 mi</td></tr>
-            <tr><td>March Air Reserve Base</td><td>Riverside</td><td>KRIV</td><td>medium airport</td><td>30.8 mi</td></tr>
-            <tr><td>Wirt Field</td><td>Llano</td><td>US-1881</td><td>small airport</td><td>31.1 mi</td></tr>
-            <tr><td>Hesperia Airport</td><td>Hesperia</td><td>KL26</td><td>small airport</td><td>31.6 mi</td></tr>
-            <tr><td>Compton Woodley Airport</td><td>Compton</td><td>KCPM</td><td>small airport</td><td>31.8 mi</td></tr>
-            <tr><td>Gray Butte Field</td><td>Palmdale</td><td>04CA</td><td>small airport</td><td>33.7 mi</td></tr>
-            <tr><td>Redlands Municipal Airport</td><td>Redlands</td><td>KREI</td><td>small airport</td><td>33.9 mi</td></tr>
-            <tr><td>Antelope Valley Soaring Club Gliderport</td><td>Phelan</td><td>US-1883</td><td>small airport</td><td>34.0 mi</td></tr>
-            <tr><td>Goodyear Blimp Base Airport</td><td>Gardena</td><td>64CL</td><td>balloonport</td><td>34.5 mi</td></tr>
-            <tr><td>McConville Airstrip</td><td>Lake Elsinore</td><td>CA42</td><td>small airport</td><td>35.0 mi</td></tr>
-            <tr><td>Adelanto Airport</td><td>Adelanto</td><td>52CL</td><td>small airport</td><td>35.3 mi</td></tr>
-            <tr><td>Krey Field Airport</td><td>Adelanto</td><td>0CL1</td><td>small airport</td><td>35.3 mi</td></tr>
-            <tr><td>Nichols Farms Airport</td><td>Palmdale</td><td>8CL0</td><td>small airport</td><td>35.4 mi</td></tr>
-            <tr><td>Jack Northrop Field Hawthorne Municipal Airport</td><td>Hawthorne</td><td>KHHR</td><td>medium airport</td><td>35.9 mi</td></tr>
-            <tr><td>Bobe Hope / Hollywood Burbank Airport</td><td>Burbank</td><td>KBUR</td><td>large airport</td><td>36.4 mi</td></tr>
-            <tr><td>Lake Arrowhead Airport</td><td>Lake Arrowhead</td><td>2CN8</td><td>small airport</td><td>36.9 mi</td></tr>
-            <tr><td>Perris Valley Airport</td><td>Perris</td><td>KL65</td><td>small airport</td><td>37.2 mi</td></tr>
-            <tr><td>Plato East Airstrip</td><td>Adelanto</td><td>US-4154</td><td>small airport</td><td>37.9 mi</td></tr>
-            <tr><td>Bella Vista Airport</td><td>Adelanto</td><td>US-1888</td><td>small airport</td><td>38.1 mi</td></tr>
-            <tr><td>Hansen Airport</td><td>Adelanto</td><td>11CL</td><td>small airport</td><td>38.2 mi</td></tr>
-            <tr><td>El Mirage Field Adelanto Airport</td><td>El Mirage</td><td>99CL</td><td>small airport</td><td>38.3 mi</td></tr>
-            <tr><td>Flying J Ranch Airport</td><td>Adelanto</td><td>US-1884</td><td>small airport</td><td>38.5 mi</td></tr>
-            <tr><td>Huettner Strip</td><td>Adelanto</td><td>US-12890</td><td>small airport</td><td>38.7 mi</td></tr>
-            <tr><td>Zamperini Field</td><td>Torrance</td><td>KTOA</td><td>small airport</td><td>39.5 mi</td></tr>
-            <tr><td>Los Angeles International Airport</td><td>Los Angeles</td><td>KLAX</td><td>large airport</td><td>39.5 mi</td></tr>
-            <tr><td>Snow Airstrip</td><td>Adelanto</td><td>US-1886</td><td>small airport</td><td>39.6 mi</td></tr>
-            <tr><td>El Mirage Auxiliary Airfield</td><td>Adelanto</td><td>US-1887</td><td>small airport</td><td>39.7 mi</td></tr>
-            <tr><td>Tadgyro Gyroport</td><td>Adelanto</td><td>US-1885</td><td>small airport</td><td>39.7 mi</td></tr>
-            <tr><td>Skylark Airport</td><td>Lake Elsinore</td><td>CA89</td><td>small airport</td><td>39.9 mi</td></tr>
-            <tr><td>Hamilton Airstrip</td><td>Adelanto</td><td>US-3575</td><td>small airport</td><td>40.1 mi</td></tr>
-            <tr><td>Evans Airstrip</td><td>Adelanto</td><td>US-3574</td><td>small airport</td><td>40.3 mi</td></tr>
-            <tr><td>Whiteman Airport</td><td>Pacoima</td><td>KWHP</td><td>small airport</td><td>40.5 mi</td></tr>
-            <tr><td>Southern California Logistics Airport</td><td>Victorville</td><td>KVCV</td><td>small airport</td><td>41.0 mi</td></tr>
-            <tr><td>Santa Monica Municipal Airport</td><td>Santa Monica</td><td>KSMO</td><td>medium airport</td><td>41.0 mi</td></tr>
-            <tr><td>El Mirage Valley Landing Strip</td><td>Adelanto</td><td>US-3573</td><td>small airport</td><td>42.1 mi</td></tr>
-            <tr><td>Palmdale Regional Airport / USAF Plant 42 Airport</td><td>Palmdale</td><td>KPMD</td><td>medium airport</td><td>42.7 mi</td></tr>
-            <tr><td>Van Nuys Airport</td><td>Van Nuys</td><td>KVNY</td><td>medium airport</td><td>43.9 mi</td></tr>
-            <tr><td>Agua Dulce Airpark</td><td>Agua Dulce</td><td>KL70</td><td>small airport</td><td>43.9 mi</td></tr>
-            <tr><td>Osborne Airport</td><td>Victorville</td><td>8CA0</td><td>small airport</td><td>43.9 mi</td></tr>
-            <tr><td>Adobe Mountain Airport</td><td>Lancaster</td><td>US-3572</td><td>small airport</td><td>44.0 mi</td></tr>
-            <tr><td>Tenaja Valley Airport</td><td>Murrieta</td><td>2CN3</td><td>small airport</td><td>45.8 mi</td></tr>
-            <tr><td>Tenaja Ranch Airport</td><td>Murrieta</td><td>US-3501</td><td>small airport</td><td>46.2 mi</td></tr>
-            <tr><td>Camp Pendleton Helicopter Outlying Landing Field</td><td>Oceanside</td><td>US-2952</td><td>small airport</td><td>46.3 mi</td></tr>
-            <tr><td>Apple Valley Airport</td><td>Apple Valley</td><td>KAPV</td><td>small airport</td><td>46.5 mi</td></tr>
-            <tr><td>Hemet Ryan Airport</td><td>Hemet</td><td>KHMT</td><td>small airport</td><td>47.5 mi</td></tr>
-            <tr><td>Sky Ranch Airport</td><td>Fallbrook</td><td>US-3502</td><td>small airport</td><td>47.8 mi</td></tr>
-            <tr><td>Soboba Flight Park Gliderport</td><td>San Jacinto</td><td>US-4403</td><td>small airport</td><td>48.1 mi</td></tr>
-            <tr><td>Rabbit Ranch Airport</td><td>Lucerne Valley</td><td>4CL4</td><td>small airport</td><td>48.1 mi</td></tr>
-            <tr><td>Rabbit Lake Auxiliary Landing Field</td><td>Lucerne Valley</td><td>US-4705</td><td>small airport</td><td>48.7 mi</td></tr>
-            <tr><td>Sun Hill Ranch Airport</td><td>Helendale</td><td>CA70</td><td>small airport</td><td>48.7 mi</td></tr>
-            <tr><td>Rabbit Lake South Airport</td><td>Lucerne Valley</td><td>US-4704</td><td>small airport</td><td>49.0 mi</td></tr>
-            <tr><td>French Valley Airport</td><td>Murrieta</td><td>KF70</td><td>small airport</td><td>49.6 mi</td></tr>
-            <tr><td>Garnsay Ranch Airport</td><td>Fallbrook</td><td>US-3503</td><td>small airport</td><td>49.7 mi</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="fineprint">Based on OurAirports data. Distances are approximate from ZIP 91767 centroid.</p>
+      <p class="fineprint">Top 15 by distance. Based on OurAirports data. Distances are approximate from ZIP 91767 centroid.</p>
     </section>
 
     <section id="events" class="section">
@@ -345,5 +269,22 @@
       <button class="primary-cta">Send an Update</button>
     </div>
   </footer>
+  <script>
+    const airportData = {
+      KPOC: { name: "Brackett Field" },
+      KCCB: { name: "Cable Airport" },
+      KRAL: { name: "Riverside Municipal" }
+    };
+
+    const select = document.getElementById("airportSelect");
+    const nameEl = document.getElementById("wxName");
+    const identEl = document.getElementById("wxIdent");
+
+    select.addEventListener("change", () => {
+      const code = select.value;
+      nameEl.textContent = airportData[code].name;
+      identEl.textContent = code;
+    });
+  </script>
 </body>
 </html>
