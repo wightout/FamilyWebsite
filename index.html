@@ -56,7 +56,7 @@
           </div>
         </article>
       </div>
-      <p class="fineprint">Hook this to live METAR/TAF data when you’re ready.</p>
+      <p class="fineprint" id="wxUpdated">Last updated: — • Source: NOAA Aviation Weather Center</p>
     </section>
 
     <section class="hero">
@@ -279,12 +279,58 @@
     const select = document.getElementById("airportSelect");
     const nameEl = document.getElementById("wxName");
     const identEl = document.getElementById("wxIdent");
+    const metarEl = document.getElementById("wxMetar");
+    const tafEl = document.getElementById("wxTaf");
+    const updatedEl = document.getElementById("wxUpdated");
+    let weatherData = null;
 
-    select.addEventListener("change", () => {
-      const code = select.value;
-      nameEl.textContent = airportData[code].name;
+    function formatTime(value) {
+      if (!value) return "";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "";
+      return date.toLocaleString();
+    }
+
+    function renderWeather(code) {
+      const fallback = airportData[code] || { name: code };
+      nameEl.textContent = fallback.name;
       identEl.textContent = code;
-    });
+
+      if (!weatherData || !weatherData.airports || !weatherData.airports[code]) {
+        metarEl.textContent = "Unable to load METAR.";
+        tafEl.textContent = "Unable to load TAF.";
+        return;
+      }
+
+      const wx = weatherData.airports[code];
+      const metarTime = formatTime(wx.metarTime);
+      const tafTime = formatTime(wx.tafTime);
+
+      metarEl.textContent = wx.metar
+        ? `${wx.metar}${metarTime ? ` (${metarTime})` : ""}`
+        : "No METAR available.";
+      tafEl.textContent = wx.taf
+        ? `${wx.taf}${tafTime ? ` (${tafTime})` : ""}`
+        : "No TAF available.";
+    }
+
+    async function loadWeather() {
+      try {
+        const response = await fetch("data/aviation.json", { cache: "no-store" });
+        if (!response.ok) throw new Error("Weather data missing");
+        weatherData = await response.json();
+        if (weatherData.updated) {
+          updatedEl.textContent = `Last updated: ${formatTime(weatherData.updated)} • Source: NOAA Aviation Weather Center`;
+        }
+        renderWeather(select.value);
+      } catch (err) {
+        updatedEl.textContent = "Last updated: unavailable • Source: NOAA Aviation Weather Center";
+        renderWeather(select.value);
+      }
+    }
+
+    select.addEventListener("change", () => renderWeather(select.value));
+    loadWeather();
   </script>
 </body>
 </html>
