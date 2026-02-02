@@ -37,7 +37,13 @@ h1,h2,h3,h4{
   font-family:"Playfair Display","Times New Roman",serif;
   margin:0 0 0.6rem;
   font-weight:600;
+  line-height:1.15;
 }
+
+h1{font-size:clamp(2rem,4vw,3.2rem)}
+h2{font-size:clamp(1.8rem,3.6vw,2.8rem)}
+h3{font-size:clamp(1.4rem,2.6vw,2rem)}
+h4{font-size:clamp(1.1rem,2vw,1.4rem)}
 
 p{margin:0 0 1rem;color:var(--ink-soft)}
 
@@ -82,6 +88,7 @@ a{
   display:flex;
   gap:1.5rem;
   font-size:0.95rem;
+  flex-wrap:wrap;
 }
 
 .primary-cta,
@@ -276,6 +283,7 @@ main{
   font-family:inherit;
   font-size:0.9rem;
   background:#fff;
+  width:100%;
 }
 
 .wx-grid{
@@ -504,17 +512,62 @@ tbody tr:nth-child(even){
     flex-direction:column;
     align-items:flex-start;
   }
-  .site-nav{
-    flex-wrap:wrap;
-  }
   .wx-single{
     grid-template-columns:1fr;
+  }
+  .hero-meta{
+    gap:1rem;
+  }
+  .panel-card,
+  .logbook-panel,
+  .ideas,
+  .event-card,
+  .wx-card,
+  .wx-select{
+    border-radius:18px;
   }
 }
 
 @media (max-width:600px){
   main{padding:1.5rem 6vw 3rem}
   .site-header{padding:1.5rem 6vw 0.5rem}
-  .hero-actions{flex-direction:column;align-items:flex-start}
+  .hero-actions{flex-direction:column;align-items:stretch}
+  .hero-actions .primary-cta,
+  .hero-actions .ghost-cta{
+    width:100%;
+  }
+  .site-header .primary-cta{
+    width:100%;
+    text-align:center;
+  }
+  .hero-meta{
+    flex-direction:column;
+  }
+  .table-card{
+    border-radius:16px;
+  }
+  table{
+    min-width:560px;
+  }
+  .site-footer{
+    padding:1.5rem 6vw 2.5rem;
+  }
   .gallery-tile.wide{grid-column:span 1}
+}
+
+@media (max-width:420px){
+  .site-nav{
+    gap:1rem;
+    font-size:0.9rem;
+  }
+  .lead{
+    font-size:1rem;
+  }
+  .event{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .event-tag{
+    align-self:flex-start;
+  }
 }
