@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Velvet Runway — The Enriquez Family</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="orbital-grid" aria-hidden="true"></div>
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div>
+        <p class="brand-eyebrow">Enriquez Family Field Notes</p>
+        <h1>Velvet Runway</h1>
+      </div>
+    </div>
+    <nav class="site-nav">
+      <a href="#weather">METAR/TAF</a>
+      <a href="#airports">Airports</a>
+      <a href="#events">Events</a>
+      <a href="#logbook">Logbook</a>
+      <a href="#gallery">Gallery</a>
+    </nav>
+    <button class="primary-cta">Join Our Flight List</button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Mid-century calm • Jet-age energy</p>
+        <h2>Your family HQ for aviation adventures.</h2>
+        <p class="lead">
+          Track local airport events, log unforgettable flights, and collect your favorite
+          mid-century moments in one warm, modern home on the web.
+        </p>
+        <div class="hero-actions">
+          <button class="primary-cta">Add Next Event</button>
+          <button class="ghost-cta">Share the Calendar</button>
+        </div>
+        <div class="hero-meta">
+          <div>
+            <p class="meta-label">Nearest Airfields</p>
+            <p class="meta-value">Z99 • KSQL • KOAK</p>
+          </div>
+          <div>
+            <p class="meta-label">This Month</p>
+            <p class="meta-value">4 fly-ins • 2 museum nights</p>
+          </div>
+          <div>
+            <p class="meta-label">Tracking Radius</p>
+            <p class="meta-value">50 miles • 71 airports</p>
+          </div>
+          <div>
+            <p class="meta-label">Weather Watch</p>
+            <p class="meta-value">KPOC • KCCB • KRAL</p>
+          </div>
+        </div>
+      </div>
+      <div class="hero-panel">
+        <div class="panel-card">
+          <p class="panel-title">Next On The Radar</p>
+          <div class="event">
+            <div>
+              <p class="event-title">Golden Gate Aviation Night</p>
+              <p class="event-meta">Friday • 6:30 PM • San Carlos Airport</p>
+            </div>
+            <span class="event-tag">Fly-in</span>
+          </div>
+          <div class="event">
+            <div>
+              <p class="event-title">Museum After Dark</p>
+              <p class="event-meta">Saturday • 7:00 PM • Hiller Aviation</p>
+            </div>
+            <span class="event-tag">Exhibit</span>
+          </div>
+          <div class="event">
+            <div>
+              <p class="event-title">Runway Picnic</p>
+              <p class="event-meta">Sunday • 12:00 PM • Oakland North Field</p>
+            </div>
+            <span class="event-tag">Family</span>
+          </div>
+        </div>
+        <div class="panel-stamp">
+          <p class="stamp-title">Jet Age Checklist</p>
+          <ul>
+            <li>Polaroid wall updated</li>
+            <li>Flight log digitized</li>
+            <li>Retro soundtrack queued</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="weather" class="section weather">
+      <div class="section-heading">
+        <h3>Local METAR &amp; TAF</h3>
+        <p>Simple, current reports for Brackett, Cable, and Riverside.</p>
+      </div>
+      <div class="wx-grid">
+        <article class="wx-card">
+          <div class="wx-header">
+            <h4>Brackett Field</h4>
+            <span class="wx-ident">KPOC</span>
+          </div>
+          <div class="wx-block">
+            <p class="wx-label">METAR</p>
+            <p class="wx-text">Loading latest METAR...</p>
+          </div>
+          <div class="wx-block">
+            <p class="wx-label">TAF</p>
+            <p class="wx-text">Loading latest TAF...</p>
+          </div>
+        </article>
+        <article class="wx-card">
+          <div class="wx-header">
+            <h4>Cable Airport</h4>
+            <span class="wx-ident">KCCB</span>
+          </div>
+          <div class="wx-block">
+            <p class="wx-label">METAR</p>
+            <p class="wx-text">Loading latest METAR...</p>
+          </div>
+          <div class="wx-block">
+            <p class="wx-label">TAF</p>
+            <p class="wx-text">Loading latest TAF...</p>
+          </div>
+        </article>
+        <article class="wx-card">
+          <div class="wx-header">
+            <h4>Riverside Municipal</h4>
+            <span class="wx-ident">KRAL</span>
+          </div>
+          <div class="wx-block">
+            <p class="wx-label">METAR</p>
+            <p class="wx-text">Loading latest METAR...</p>
+          </div>
+          <div class="wx-block">
+            <p class="wx-label">TAF</p>
+            <p class="wx-text">Loading latest TAF...</p>
+          </div>
+        </article>
+      </div>
+      <p class="fineprint">Hook this to live METAR/TAF data when you’re ready.</p>
+    </section>
+
+    <section id="airports" class="section airports">
+      <div class="section-heading">
+        <h3>Airports Within 50 Miles of 91767</h3>
+        <p>Sorted by distance from the ZIP centroid. Add a star when you plan a visit.</p>
+      </div>
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Airport</th>
+              <th>City</th>
+              <th>Ident</th>
+              <th>Type</th>
+              <th>Distance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Brackett Field</td><td>La Verne</td><td>KPOC</td><td>small airport</td><td>2.6 mi</td></tr>
+            <tr><td>Upland-Cable Airport</td><td>Upland</td><td>KCCB</td><td>small airport</td><td>3.6 mi</td></tr>
+            <tr><td>Ontario International Airport</td><td>Ontario</td><td>KONT</td><td>large airport</td><td>8.1 mi</td></tr>
+            <tr><td>Chino Airport</td><td>Chino</td><td>KCNO</td><td>small airport</td><td>9.4 mi</td></tr>
+            <tr><td>Corona Municipal Airport</td><td>Corona</td><td>KAJO</td><td>small airport</td><td>14.9 mi</td></tr>
+            <tr><td>San Gabriel Valley Airport</td><td>El Monte</td><td>KEMT</td><td>small airport</td><td>17.0 mi</td></tr>
+            <tr><td>Riverside Municipal Airport</td><td>Riverside</td><td>KRAL</td><td>medium airport</td><td>19.1 mi</td></tr>
+            <tr><td>Flabob Airport</td><td>Riverside</td><td>KRIR</td><td>small airport</td><td>19.8 mi</td></tr>
+            <tr><td>Fullerton Municipal Airport</td><td>Fullerton</td><td>KFUL</td><td>small airport</td><td>20.0 mi</td></tr>
+            <tr><td>Andy Jackson Airpark</td><td>San Bernadino</td><td>US-12870</td><td>small airport</td><td>25.0 mi</td></tr>
+            <tr><td>Los Alamitos Army Air Field</td><td>Los Alamitos</td><td>KSLI</td><td>medium airport</td><td>27.0 mi</td></tr>
+            <tr><td>Great Park Balloon Ride</td><td>Irvine</td><td>US-7111</td><td>balloonport</td><td>28.2 mi</td></tr>
+            <tr><td>Crystal Airport</td><td>Llano</td><td>46CN</td><td>small airport</td><td>28.3 mi</td></tr>
+            <tr><td>San Bernardino International Airport</td><td>San Bernardino</td><td>KSBD</td><td>large airport</td><td>28.7 mi</td></tr>
+            <tr><td>John Wayne Orange County International Airport</td><td>Santa Ana</td><td>KSNA</td><td>large airport</td><td>29.1 mi</td></tr>
+            <tr><td>Black Butte Airfield</td><td>Llano</td><td>US-1878</td><td>small airport</td><td>29.6 mi</td></tr>
+            <tr><td>Long Beach International Airport</td><td>Long Beach</td><td>KLGB</td><td>large airport</td><td>29.8 mi</td></tr>
+            <tr><td>Oasis Airport</td><td>Phelan</td><td>US-1882</td><td>small airport</td><td>30.0 mi</td></tr>
+            <tr><td>Brian Ranch Airport</td><td>Palmdale</td><td>CL13</td><td>small airport</td><td>30.0 mi</td></tr>
+            <tr><td>March Air Reserve Base</td><td>Riverside</td><td>KRIV</td><td>medium airport</td><td>30.8 mi</td></tr>
+            <tr><td>Wirt Field</td><td>Llano</td><td>US-1881</td><td>small airport</td><td>31.1 mi</td></tr>
+            <tr><td>Hesperia Airport</td><td>Hesperia</td><td>KL26</td><td>small airport</td><td>31.6 mi</td></tr>
+            <tr><td>Compton Woodley Airport</td><td>Compton</td><td>KCPM</td><td>small airport</td><td>31.8 mi</td></tr>
+            <tr><td>Gray Butte Field</td><td>Palmdale</td><td>04CA</td><td>small airport</td><td>33.7 mi</td></tr>
+            <tr><td>Redlands Municipal Airport</td><td>Redlands</td><td>KREI</td><td>small airport</td><td>33.9 mi</td></tr>
+            <tr><td>Antelope Valley Soaring Club Gliderport</td><td>Phelan</td><td>US-1883</td><td>small airport</td><td>34.0 mi</td></tr>
+            <tr><td>Goodyear Blimp Base Airport</td><td>Gardena</td><td>64CL</td><td>balloonport</td><td>34.5 mi</td></tr>
+            <tr><td>McConville Airstrip</td><td>Lake Elsinore</td><td>CA42</td><td>small airport</td><td>35.0 mi</td></tr>
+            <tr><td>Adelanto Airport</td><td>Adelanto</td><td>52CL</td><td>small airport</td><td>35.3 mi</td></tr>
+            <tr><td>Krey Field Airport</td><td>Adelanto</td><td>0CL1</td><td>small airport</td><td>35.3 mi</td></tr>
+            <tr><td>Nichols Farms Airport</td><td>Palmdale</td><td>8CL0</td><td>small airport</td><td>35.4 mi</td></tr>
+            <tr><td>Jack Northrop Field Hawthorne Municipal Airport</td><td>Hawthorne</td><td>KHHR</td><td>medium airport</td><td>35.9 mi</td></tr>
+            <tr><td>Bobe Hope / Hollywood Burbank Airport</td><td>Burbank</td><td>KBUR</td><td>large airport</td><td>36.4 mi</td></tr>
+            <tr><td>Lake Arrowhead Airport</td><td>Lake Arrowhead</td><td>2CN8</td><td>small airport</td><td>36.9 mi</td></tr>
+            <tr><td>Perris Valley Airport</td><td>Perris</td><td>KL65</td><td>small airport</td><td>37.2 mi</td></tr>
+            <tr><td>Plato East Airstrip</td><td>Adelanto</td><td>US-4154</td><td>small airport</td><td>37.9 mi</td></tr>
+            <tr><td>Bella Vista Airport</td><td>Adelanto</td><td>US-1888</td><td>small airport</td><td>38.1 mi</td></tr>
+            <tr><td>Hansen Airport</td><td>Adelanto</td><td>11CL</td><td>small airport</td><td>38.2 mi</td></tr>
+            <tr><td>El Mirage Field Adelanto Airport</td><td>El Mirage</td><td>99CL</td><td>small airport</td><td>38.3 mi</td></tr>
+            <tr><td>Flying J Ranch Airport</td><td>Adelanto</td><td>US-1884</td><td>small airport</td><td>38.5 mi</td></tr>
+            <tr><td>Huettner Strip</td><td>Adelanto</td><td>US-12890</td><td>small airport</td><td>38.7 mi</td></tr>
+            <tr><td>Zamperini Field</td><td>Torrance</td><td>KTOA</td><td>small airport</td><td>39.5 mi</td></tr>
+            <tr><td>Los Angeles International Airport</td><td>Los Angeles</td><td>KLAX</td><td>large airport</td><td>39.5 mi</td></tr>
+            <tr><td>Snow Airstrip</td><td>Adelanto</td><td>US-1886</td><td>small airport</td><td>39.6 mi</td></tr>
+            <tr><td>El Mirage Auxiliary Airfield</td><td>Adelanto</td><td>US-1887</td><td>small airport</td><td>39.7 mi</td></tr>
+            <tr><td>Tadgyro Gyroport</td><td>Adelanto</td><td>US-1885</td><td>small airport</td><td>39.7 mi</td></tr>
+            <tr><td>Skylark Airport</td><td>Lake Elsinore</td><td>CA89</td><td>small airport</td><td>39.9 mi</td></tr>
+            <tr><td>Hamilton Airstrip</td><td>Adelanto</td><td>US-3575</td><td>small airport</td><td>40.1 mi</td></tr>
+            <tr><td>Evans Airstrip</td><td>Adelanto</td><td>US-3574</td><td>small airport</td><td>40.3 mi</td></tr>
+            <tr><td>Whiteman Airport</td><td>Pacoima</td><td>KWHP</td><td>small airport</td><td>40.5 mi</td></tr>
+            <tr><td>Southern California Logistics Airport</td><td>Victorville</td><td>KVCV</td><td>small airport</td><td>41.0 mi</td></tr>
+            <tr><td>Santa Monica Municipal Airport</td><td>Santa Monica</td><td>KSMO</td><td>medium airport</td><td>41.0 mi</td></tr>
+            <tr><td>El Mirage Valley Landing Strip</td><td>Adelanto</td><td>US-3573</td><td>small airport</td><td>42.1 mi</td></tr>
+            <tr><td>Palmdale Regional Airport / USAF Plant 42 Airport</td><td>Palmdale</td><td>KPMD</td><td>medium airport</td><td>42.7 mi</td></tr>
+            <tr><td>Van Nuys Airport</td><td>Van Nuys</td><td>KVNY</td><td>medium airport</td><td>43.9 mi</td></tr>
+            <tr><td>Agua Dulce Airpark</td><td>Agua Dulce</td><td>KL70</td><td>small airport</td><td>43.9 mi</td></tr>
+            <tr><td>Osborne Airport</td><td>Victorville</td><td>8CA0</td><td>small airport</td><td>43.9 mi</td></tr>
+            <tr><td>Adobe Mountain Airport</td><td>Lancaster</td><td>US-3572</td><td>small airport</td><td>44.0 mi</td></tr>
+            <tr><td>Tenaja Valley Airport</td><td>Murrieta</td><td>2CN3</td><td>small airport</td><td>45.8 mi</td></tr>
+            <tr><td>Tenaja Ranch Airport</td><td>Murrieta</td><td>US-3501</td><td>small airport</td><td>46.2 mi</td></tr>
+            <tr><td>Camp Pendleton Helicopter Outlying Landing Field</td><td>Oceanside</td><td>US-2952</td><td>small airport</td><td>46.3 mi</td></tr>
+            <tr><td>Apple Valley Airport</td><td>Apple Valley</td><td>KAPV</td><td>small airport</td><td>46.5 mi</td></tr>
+            <tr><td>Hemet Ryan Airport</td><td>Hemet</td><td>KHMT</td><td>small airport</td><td>47.5 mi</td></tr>
+            <tr><td>Sky Ranch Airport</td><td>Fallbrook</td><td>US-3502</td><td>small airport</td><td>47.8 mi</td></tr>
+            <tr><td>Soboba Flight Park Gliderport</td><td>San Jacinto</td><td>US-4403</td><td>small airport</td><td>48.1 mi</td></tr>
+            <tr><td>Rabbit Ranch Airport</td><td>Lucerne Valley</td><td>4CL4</td><td>small airport</td><td>48.1 mi</td></tr>
+            <tr><td>Rabbit Lake Auxiliary Landing Field</td><td>Lucerne Valley</td><td>US-4705</td><td>small airport</td><td>48.7 mi</td></tr>
+            <tr><td>Sun Hill Ranch Airport</td><td>Helendale</td><td>CA70</td><td>small airport</td><td>48.7 mi</td></tr>
+            <tr><td>Rabbit Lake South Airport</td><td>Lucerne Valley</td><td>US-4704</td><td>small airport</td><td>49.0 mi</td></tr>
+            <tr><td>French Valley Airport</td><td>Murrieta</td><td>KF70</td><td>small airport</td><td>49.6 mi</td></tr>
+            <tr><td>Garnsay Ranch Airport</td><td>Fallbrook</td><td>US-3503</td><td>small airport</td><td>49.7 mi</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fineprint">Based on OurAirports data. Distances are approximate from ZIP 91767 centroid.</p>
+    </section>
+
+    <section id="events" class="section">
+      <div class="section-heading">
+        <h3>Upcoming Aviation Events</h3>
+        <p>Use this space to pin local fly-ins, museum talks, and airshow schedules.</p>
+      </div>
+      <div class="card-grid">
+        <article class="event-card">
+          <h4>Sunset Runway Social</h4>
+          <p class="card-meta">Thursday • 5:30 PM • Palo Alto Airport</p>
+          <p class="card-body">Live jazz, guided hangar tour, and a kids aviation craft corner.</p>
+          <button class="text-cta">Add to Calendar</button>
+        </article>
+        <article class="event-card">
+          <h4>Historic Hangar Tour</h4>
+          <p class="card-meta">Saturday • 10:00 AM • Moffett Field</p>
+          <p class="card-body">Docents walk through Cold War aircraft and the iconic airship hangars.</p>
+          <button class="text-cta">Reserve Spots</button>
+        </article>
+        <article class="event-card">
+          <h4>Jet Age Film Night</h4>
+          <p class="card-meta">Sunday • 7:00 PM • Family Backyard</p>
+          <p class="card-body">Project a classic aviation film with themed snacks and lawn loungers.</p>
+          <button class="text-cta">Invite Friends</button>
+        </article>
+      </div>
+    </section>
+
+    <section id="logbook" class="section split">
+      <div>
+        <h3>Family Flight Logbook</h3>
+        <p>
+          Capture tail numbers, routes, notes, and favorite moments. Each entry becomes a
+          keepsake you can sort by destination, aircraft, or season.
+        </p>
+        <div class="logbook">
+          <div>
+            <p class="log-label">Last Flight</p>
+            <p class="log-value">Bay Tour • Cessna 172 • 44 minutes</p>
+          </div>
+          <div>
+            <p class="log-label">Favorite View</p>
+            <p class="log-value">Golden Gate pass at sunset</p>
+          </div>
+          <div>
+            <p class="log-label">Next Adventure</p>
+            <p class="log-value">Santa Barbara coastal hop</p>
+          </div>
+        </div>
+      </div>
+      <div class="logbook-panel">
+        <p class="panel-title">Add A Flight Memory</p>
+        <form>
+          <label>
+            Flight name
+            <input type="text" placeholder="Evening Loop Over the Bay" />
+          </label>
+          <label>
+            Date & location
+            <input type="text" placeholder="Feb 18 • Palo Alto" />
+          </label>
+          <label>
+            Memory
+            <textarea rows="4" placeholder="Favorite moment from the flight..."></textarea>
+          </label>
+          <button class="primary-cta" type="button">Save Entry</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="gallery" class="section">
+      <div class="section-heading">
+        <h3>Photo Hangar</h3>
+        <p>Mix family portraits with vintage travel posters for a jet-age moodboard.</p>
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-tile tall">
+          <p>Family Flight Crew</p>
+        </div>
+        <div class="gallery-tile">
+          <p>Mid-century Terminal Finds</p>
+        </div>
+        <div class="gallery-tile wide">
+          <p>Sunset Over The Runway</p>
+        </div>
+        <div class="gallery-tile">
+          <p>Wing Detail Studies</p>
+        </div>
+        <div class="gallery-tile">
+          <p>Travel Poster Collection</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div>
+      <p class="footer-title">Velvet Runway</p>
+      <p class="footer-sub">A family website inspired by the jet age.</p>
+    </div>
+    <div class="footer-actions">
+      <button class="ghost-cta">Print the Logbook</button>
+      <button class="primary-cta">Send an Update</button>
+    </div>
+  </footer>
+</body>
+</html>
