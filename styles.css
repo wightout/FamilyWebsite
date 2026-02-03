@@ -356,6 +356,23 @@ main{
 .wx-block{
   padding-top:0.3rem;
   border-top:1px solid rgba(31,27,23,0.08);
+  display:flex;
+  flex-direction:column;
+  gap:0.45rem;
+  position:relative;
+}
+
+.wx-block-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:0.75rem;
+}
+
+.wx-meta{
+  display:flex;
+  align-items:center;
+  gap:0.5rem;
 }
 
 .wx-label{
@@ -363,7 +380,29 @@ main{
   letter-spacing:0.18em;
   font-size:0.65rem;
   color:var(--ink-soft);
-  margin-bottom:0.5rem;
+  margin:0;
+}
+
+.wx-age{
+  font-size:0.7rem;
+  color:var(--ink-soft);
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+
+.wx-flag{
+  font-size:0.65rem;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  background:#d9413f;
+  color:#fff;
+  padding:0.3rem 0.5rem;
+  border-radius:999px;
+  box-shadow:0 6px 18px rgba(217,65,63,0.35);
+  opacity:0;
+  transform:translateY(-4px);
+  transition:opacity 0.2s ease, transform 0.2s ease;
 }
 
 .wx-text{
@@ -371,6 +410,31 @@ main{
   font-size:0.85rem;
   color:var(--ink);
   margin:0;
+}
+
+.wx-block[data-status="ok"] .wx-flag{
+  opacity:0;
+  transform:translateY(-4px);
+}
+
+.wx-block[data-status="stale"]{
+  border-top-color:rgba(214,140,27,0.5);
+}
+
+.wx-block[data-status="stale"] .wx-flag{
+  background:#e7a01e;
+  color:#2b1600;
+  opacity:1;
+  transform:translateY(0);
+}
+
+.wx-block[data-status="error"]{
+  border-top-color:rgba(217,65,63,0.6);
+}
+
+.wx-block[data-status="error"] .wx-flag{
+  opacity:1;
+  transform:translateY(0);
 }
 
 .event-card{
@@ -457,23 +521,39 @@ input,textarea{
 
 .gallery-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  grid-auto-rows:160px;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
   gap:1rem;
 }
 
 .gallery-tile{
-  background:linear-gradient(130deg,rgba(42,77,79,0.2),rgba(200,107,74,0.15));
+  margin:0;
+  position:relative;
   border-radius:20px;
-  padding:1.2rem;
+  overflow:hidden;
+  background:linear-gradient(130deg,rgba(42,77,79,0.2),rgba(200,107,74,0.15));
+  box-shadow:0 10px 24px rgba(31,27,23,0.12);
+  aspect-ratio:4/3;
   display:flex;
   align-items:flex-end;
-  font-weight:600;
-  color:var(--ink);
 }
 
-.gallery-tile.tall{grid-row:span 2}
-.gallery-tile.wide{grid-column:span 2}
+.gallery-tile img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.gallery-tile figcaption{
+  position:relative;
+  z-index:1;
+  padding:0.9rem 1rem;
+  font-weight:600;
+  color:var(--ink);
+  background:linear-gradient(180deg,rgba(255,247,235,0) 0%,rgba(255,247,235,0.9) 70%,rgba(255,247,235,0.95) 100%);
+  width:100%;
+}
 
 .airports .table-card{
   background:var(--paper);
@@ -595,7 +675,9 @@ tbody tr:nth-child(even){
   .site-footer{
     padding:1.5rem 6vw 2.5rem;
   }
-  .gallery-tile.wide{grid-column:span 1}
+  .gallery-grid{
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  }
 }
 
 @media (max-width:420px){

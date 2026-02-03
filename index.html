@@ -53,12 +53,24 @@
             <h4 id="wxName">Brackett Field</h4>
             <span class="wx-ident" id="wxIdent">KPOC</span>
           </div>
-          <div class="wx-block">
-            <p class="wx-label">METAR</p>
+          <div class="wx-block" data-type="metar" data-status="loading">
+            <div class="wx-block-header">
+              <p class="wx-label">METAR</p>
+              <div class="wx-meta">
+                <span class="wx-age" id="wxMetarAge" aria-live="polite">Age: --</span>
+                <span class="wx-flag" id="wxMetarFlag" aria-hidden="true">FLAG</span>
+              </div>
+            </div>
             <p class="wx-text" id="wxMetar">Loading latest METAR...</p>
           </div>
-          <div class="wx-block">
-            <p class="wx-label">TAF</p>
+          <div class="wx-block" data-type="taf" data-status="loading">
+            <div class="wx-block-header">
+              <p class="wx-label">TAF</p>
+              <div class="wx-meta">
+                <span class="wx-age" id="wxTafAge" aria-live="polite">Age: --</span>
+                <span class="wx-flag" id="wxTafFlag" aria-hidden="true">FLAG</span>
+              </div>
+            </div>
             <p class="wx-text" id="wxTaf">Loading latest TAF...</p>
           </div>
         </article>
@@ -294,14 +306,88 @@
     const identEl = document.getElementById("wxIdent");
     const metarEl = document.getElementById("wxMetar");
     const tafEl = document.getElementById("wxTaf");
+    const metarAgeEl = document.getElementById("wxMetarAge");
+    const tafAgeEl = document.getElementById("wxTafAge");
+    const metarBlock = metarEl?.closest(".wx-block");
+    const tafBlock = tafEl?.closest(".wx-block");
     const updatedEl = document.getElementById("wxUpdated");
     let weatherData = null;
+
+    const STALE_THRESHOLDS = {
+      metar: 90 * 60 * 1000,
+      taf: 6 * 60 * 60 * 1000
+    };
 
     function formatTime(value) {
       if (!value) return "";
       const date = new Date(value);
       if (Number.isNaN(date.getTime())) return "";
       return date.toLocaleString();
+    }
+
+    function parseTime(value) {
+      if (!value) return null;
+      if (typeof value === "number" && Number.isFinite(value)) {
+        return value > 1e12 ? value : value * 1000;
+      }
+      if (typeof value === "string") {
+        const parsed = Date.parse(value);
+        if (!Number.isNaN(parsed)) return parsed;
+        const numeric = Number(value);
+        if (Number.isFinite(numeric)) return numeric > 1e12 ? numeric : numeric * 1000;
+      }
+      return null;
+    }
+
+    function formatAge(ms) {
+      if (!Number.isFinite(ms) || ms < 0) return "--";
+      const totalMinutes = Math.floor(ms / 60000);
+      if (totalMinutes < 1) return "<1m";
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      if (hours > 0) return minutes ? `${hours}h ${minutes}m` : `${hours}h`;
+      return `${minutes}m`;
+    }
+
+    function setStatus(block, status) {
+      if (block) block.dataset.status = status;
+    }
+
+    function updateBlock(type, block, ageEl, timeMs) {
+      if (!block) return;
+      if (Number.isFinite(timeMs)) {
+        block.dataset.timeMs = String(timeMs);
+      } else {
+        delete block.dataset.timeMs;
+      }
+      const ageMs = Number.isFinite(timeMs) ? Date.now() - timeMs : null;
+      if (ageEl) ageEl.textContent = `Age: ${formatAge(ageMs)}`;
+      const threshold = STALE_THRESHOLDS[type] || STALE_THRESHOLDS.metar;
+      if (!Number.isFinite(ageMs)) {
+        setStatus(block, "stale");
+      } else if (ageMs > threshold) {
+        setStatus(block, "stale");
+      } else {
+        setStatus(block, "ok");
+      }
+    }
+
+    function updateAges() {
+      const now = Date.now();
+      const blocks = [
+        { type: "metar", block: metarBlock, ageEl: metarAgeEl },
+        { type: "taf", block: tafBlock, ageEl: tafAgeEl }
+      ];
+      blocks.forEach(({ type, block, ageEl }) => {
+        if (!block) return;
+        const timeMs = Number(block.dataset.timeMs);
+        if (!Number.isFinite(timeMs)) return;
+        const ageMs = now - timeMs;
+        if (ageEl) ageEl.textContent = `Age: ${formatAge(ageMs)}`;
+        if (block.dataset.status === "error") return;
+        const threshold = STALE_THRESHOLDS[type] || STALE_THRESHOLDS.metar;
+        setStatus(block, ageMs > threshold ? "stale" : "ok");
+      });
     }
 
     function renderWeather(code) {
@@ -312,10 +398,14 @@
       if (!weatherData || !weatherData.airports || !weatherData.airports[code]) {
         metarEl.textContent = "Unable to load METAR.";
         tafEl.textContent = "Unable to load TAF.";
+        setStatus(metarBlock, "error");
+        setStatus(tafBlock, "error");
         return;
       }
 
       const wx = weatherData.airports[code];
+      const metarTimeMs = parseTime(wx.metarTime);
+      const tafTimeMs = parseTime(wx.tafTime);
       const metarTime = formatTime(wx.metarTime);
       const tafTime = formatTime(wx.tafTime);
 
@@ -325,6 +415,8 @@
       tafEl.textContent = wx.taf
         ? `${wx.taf}${tafTime ? ` (${tafTime})` : ""}`
         : "No TAF available.";
+      updateBlock("metar", metarBlock, metarAgeEl, metarTimeMs);
+      updateBlock("taf", tafBlock, tafAgeEl, tafTimeMs);
     }
 
     async function loadWeather() {
@@ -338,12 +430,15 @@
         renderWeather(select.value);
       } catch (err) {
         updatedEl.textContent = "Last updated: unavailable • Source: NOAA Aviation Weather Center";
+        setStatus(metarBlock, "error");
+        setStatus(tafBlock, "error");
         renderWeather(select.value);
       }
     }
 
     select.addEventListener("change", () => renderWeather(select.value));
     loadWeather();
+    setInterval(updateAges, 15000);
   </script>
 </body>
 </html>
