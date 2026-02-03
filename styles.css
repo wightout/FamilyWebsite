@@ -392,17 +392,32 @@ main{
 }
 
 .wx-flag{
-  font-size:0.65rem;
-  letter-spacing:0.2em;
+  font-size:0.62rem;
+  letter-spacing:0.16em;
   text-transform:uppercase;
-  background:#d9413f;
+  background:#d21f1f;
   color:#fff;
-  padding:0.3rem 0.5rem;
-  border-radius:999px;
-  box-shadow:0 6px 18px rgba(217,65,63,0.35);
+  padding:0.25rem 0.55rem 0.25rem 0.45rem;
+  border-radius:2px;
+  border:1px solid #8f1212;
+  box-shadow:0 2px 0 rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.25);
   opacity:0;
   transform:translateY(-4px);
   transition:opacity 0.2s ease, transform 0.2s ease;
+  position:relative;
+}
+
+.wx-flag::after{
+  content:"";
+  position:absolute;
+  top:0;
+  right:-10px;
+  width:0;
+  height:0;
+  border-top:0.6rem solid transparent;
+  border-bottom:0.6rem solid transparent;
+  border-left:10px solid #d21f1f;
+  filter:drop-shadow(1px 0 0 #8f1212);
 }
 
 .wx-text{
@@ -422,10 +437,16 @@ main{
 }
 
 .wx-block[data-status="stale"] .wx-flag{
-  background:#e7a01e;
+  background:#f0b323;
   color:#2b1600;
+  border-color:#9b6b09;
   opacity:1;
   transform:translateY(0);
+}
+
+.wx-block[data-status="stale"] .wx-flag::after{
+  border-left-color:#f0b323;
+  filter:drop-shadow(1px 0 0 #9b6b09);
 }
 
 .wx-block[data-status="error"]{
