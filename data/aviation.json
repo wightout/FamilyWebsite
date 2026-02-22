@@ -17,8 +17,8 @@
     },
     "KRAL": {
       "name": "Riverside Municipal",
-      "metar": "METAR KRAL 221753Z 07004KT 10SM CLR 19/M02 A3023 RMK AO2 SLP226 T01891017 10189 20067 50009 $",
-      "metarTime": "2026-02-22T18:00:00.000Z",
+      "metar": "",
+      "metarTime": "",
       "taf": "",
       "tafTime": ""
     }
