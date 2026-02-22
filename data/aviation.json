@@ -3,8 +3,8 @@
   "airports": {
     "KPOC": {
       "name": "Brackett Field",
-      "metar": "METAR KPOC 221747Z VRB05KT 10SM CLR 17/M01 A3025",
-      "metarTime": "2026-02-22T18:00:00.000Z",
+      "metar": "",
+      "metarTime": "",
       "taf": "",
       "tafTime": ""
     },
