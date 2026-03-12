@@ -1,5 +1,5 @@
 {
-  "updated": "2026-03-12T23:00:00.000Z",
+  "updated": "2026-03-12T23:35:00.000Z",
   "airports": {
     "KPOC": {
       "name": "Brackett Field",
@@ -10,8 +10,8 @@
     },
     "KCCB": {
       "name": "Cable Airport",
-      "metar": "METAR KCCB 122255Z AUTO 27008KT 230V300 10SM CLR 31/M02 A3009 RMK AO2",
-      "metarTime": "2026-03-12T23:00:00.000Z",
+      "metar": "METAR KCCB 122335Z AUTO 22006KT 10SM CLR 31/M02 A3008 RMK AO2",
+      "metarTime": "2026-03-12T23:35:00.000Z",
       "taf": "",
       "tafTime": ""
     },
