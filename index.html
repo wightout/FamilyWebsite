@@ -132,8 +132,8 @@
           mid-century moments in one warm, modern home on the web.
         </p>
         <div class="hero-actions">
-          <button class="primary-cta">Add Next Event</button>
-          <button class="ghost-cta">Share the Calendar</button>
+          <button class="primary-cta" id="btnAddNextEvent">Add Next Event</button>
+          <button class="ghost-cta" id="btnShareCalendar">Share the Calendar</button>
         </div>
         <div class="hero-meta">
           <div>
@@ -296,11 +296,13 @@
       <p class="footer-sub">A family website inspired by the jet age.</p>
     </div>
     <div class="footer-actions">
-      <button class="ghost-cta">Print the Logbook</button>
-      <button class="primary-cta">Send an Update</button>
+      <button class="ghost-cta" id="btnPrintLogbook">Print the Logbook</button>
+      <button class="primary-cta" id="btnSendUpdate">Send an Update</button>
     </div>
   </footer>
   <script>
+    let allEvents = [];
+
     const airportData = {
       KPOC: { name: "Brackett Field", lat: 34.0917, lng: -117.7831 },
       KCCB: { name: "Cable Airport", lat: 34.1114, lng: -117.6878 },
@@ -694,12 +696,12 @@
       const eventsGrid = document.getElementById("eventsGrid");
       const heroList = document.getElementById("heroEventsList");
 
-      let allEvents = [];
+      let loadedEvents = [];
       try {
         const r = await fetch("data/events.json", { cache: "no-store" });
         if (!r.ok) throw new Error("Events data missing");
         const data = await r.json();
-        allEvents = Array.isArray(data.events) ? data.events : [];
+        loadedEvents = Array.isArray(data.events) ? data.events : [];
       } catch {
         if (eventsGrid) {
           while (eventsGrid.firstChild) eventsGrid.removeChild(eventsGrid.firstChild);
@@ -718,23 +720,26 @@
         return;
       }
 
+      // Store in module-level variable for ICS export and other features
+      allEvents = loadedEvents;
+
       // Render main events grid
       if (eventsGrid) {
         while (eventsGrid.firstChild) eventsGrid.removeChild(eventsGrid.firstChild);
-        if (allEvents.length === 0) {
+        if (loadedEvents.length === 0) {
           const msg = document.createElement("p");
           msg.className = "wx-text";
           msg.textContent = "No upcoming events found.";
           eventsGrid.appendChild(msg);
         } else {
-          allEvents.forEach(event => eventsGrid.appendChild(buildEventCard(event)));
+          loadedEvents.forEach(event => eventsGrid.appendChild(buildEventCard(event)));
         }
       }
 
       // Render hero panel: first 3 upcoming (non-past) events
       if (heroList) {
         while (heroList.firstChild) heroList.removeChild(heroList.firstChild);
-        const upcoming = allEvents.filter(e => !isPastEvent(e)).slice(0, 3);
+        const upcoming = loadedEvents.filter(e => !isPastEvent(e)).slice(0, 3);
         if (upcoming.length === 0) {
           const msg = document.createElement("p");
           msg.className = "event-meta";
@@ -1089,6 +1094,86 @@
     }
 
     loadLogbook();
+
+    /* ========== BUTTON HANDLERS ========== */
+
+    /* A. Print the Logbook */
+    const btnPrintLogbook = document.getElementById("btnPrintLogbook");
+    if (btnPrintLogbook) {
+      btnPrintLogbook.addEventListener("click", () => { window.print(); });
+    }
+
+    /* B. Share the Calendar — generate & download .ics */
+    function buildICS(events) {
+      const pad = (n) => String(n).padStart(2, "0");
+      function toICSDate(dateStr) {
+        // dateStr format: "Saturday, Mar 22, 2026"
+        const d = new Date(dateStr);
+        if (Number.isNaN(d.getTime())) return null;
+        return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
+      }
+      const lines = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Velvet Runway//Family Aviation Calendar//EN",
+        "CALSCALE:GREGORIAN",
+        "METHOD:PUBLISH",
+        "X-WR-CALNAME:Velvet Runway Events",
+        "X-WR-TIMEZONE:America/Los_Angeles"
+      ];
+      events.forEach((ev) => {
+        const dtstart = toICSDate(ev.date);
+        if (!dtstart) return;
+        const uid = `velvetrunway-event-${ev.id || Date.now()}@velvetrunway`;
+        const summary = (ev.title || "").replace(/,/g, "\\,").replace(/;/g, "\\;");
+        const description = (ev.description || "").replace(/,/g, "\\,").replace(/;/g, "\\;").replace(/\n/g, "\\n");
+        const location = [ev.venue, ev.city].filter(Boolean).join(", ").replace(/,/g, "\\,");
+        lines.push("BEGIN:VEVENT");
+        lines.push(`UID:${uid}`);
+        lines.push(`DTSTART;VALUE=DATE:${dtstart}`);
+        lines.push(`DTEND;VALUE=DATE:${dtstart}`);
+        lines.push(`SUMMARY:${summary}`);
+        if (description) lines.push(`DESCRIPTION:${description}`);
+        if (location) lines.push(`LOCATION:${location}`);
+        if (ev.url) lines.push(`URL:${ev.url}`);
+        lines.push("END:VEVENT");
+      });
+      lines.push("END:VCALENDAR");
+      return lines.join("\r\n");
+    }
+
+    const btnShareCalendar = document.getElementById("btnShareCalendar");
+    if (btnShareCalendar) {
+      btnShareCalendar.addEventListener("click", () => {
+        const icsContent = buildICS(allEvents);
+        const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "velvet-runway-events.ics";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    }
+
+    /* C. Send an Update */
+    const btnSendUpdate = document.getElementById("btnSendUpdate");
+    if (btnSendUpdate) {
+      btnSendUpdate.addEventListener("click", () => {
+        window.location.href = "mailto:velvetrunwayfamily@gmail.com?subject=Velvet%20Runway%20Family%20Update";
+      });
+    }
+
+    /* D. Add Next Event — scroll to events section */
+    const btnAddNextEvent = document.getElementById("btnAddNextEvent");
+    if (btnAddNextEvent) {
+      btnAddNextEvent.addEventListener("click", () => {
+        const eventsSection = document.getElementById("events");
+        if (eventsSection) eventsSection.scrollIntoView({ behavior: "smooth" });
+      });
+    }
   </script>
 </body>
 </html>
