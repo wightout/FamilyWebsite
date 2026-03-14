@@ -752,6 +752,71 @@ tbody tr:nth-child(even){
   color:var(--ink);
 }
 
+/* Winds Aloft section */
+.winds-controls{
+  display:flex;
+  gap:1rem;
+  flex-wrap:wrap;
+  margin-bottom:1.5rem;
+}
+
+.winds-table{
+  background:var(--paper);
+  border-radius:20px;
+  border:1px solid rgba(31,27,23,0.08);
+  box-shadow:0 12px 30px rgba(31,27,23,0.08);
+  overflow:hidden;
+}
+
+.winds-header{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 1fr;
+  padding:0.8rem 1.4rem;
+  background:rgba(42,77,79,0.06);
+  border-bottom:1px solid rgba(31,27,23,0.08);
+}
+
+.winds-row{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 1fr;
+  padding:0.7rem 1.4rem;
+  border-bottom:1px solid rgba(31,27,23,0.05);
+  transition:background 0.15s;
+}
+
+.winds-row:last-child{ border-bottom:none; }
+.winds-row:hover{ background:rgba(42,77,79,0.03); }
+
+.winds-cell{
+  font-size:0.88rem;
+  display:flex;
+  align-items:center;
+  gap:0.4rem;
+}
+
+.winds-label{
+  font-size:0.72rem;
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+  color:var(--ink-soft);
+  font-weight:600;
+}
+
+.winds-alt{
+  font-weight:600;
+  color:var(--ink);
+}
+
+.winds-speed{
+  font-weight:600;
+  color:var(--teal);
+}
+
+.wind-arrow{
+  font-size:1.1rem;
+  line-height:1;
+}
+
 /* Past events */
 .past-event{
   opacity:0.6;

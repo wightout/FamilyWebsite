@@ -19,6 +19,7 @@
     <nav class="site-nav">
       <a href="#weather">METAR/TAF</a>
       <a href="#sun">Sun</a>
+      <a href="#winds">Winds Aloft</a>
       <a href="#airports">Airports</a>
       <a href="#events">Events</a>
       <a href="#logbook">Logbook</a>
@@ -90,6 +91,36 @@
       <div class="sun-grid" id="sunGrid">
         <p class="wx-text">Loading sun data…</p>
       </div>
+    </section>
+
+    <section id="winds" class="section winds-section">
+      <div class="section-heading">
+        <h3>Winds Aloft</h3>
+        <p>FB wind forecasts for the nearest reporting station — plan your altitude and route.</p>
+      </div>
+      <div class="winds-controls">
+        <div class="wx-select">
+          <label for="windsStation">Station</label>
+          <select id="windsStation">
+            <option value="LAX" selected>Los Angeles (LAX)</option>
+            <option value="DAG">Daggett (DAG)</option>
+            <option value="SBA">Santa Barbara (SBA)</option>
+            <option value="SAN">San Diego (SAN)</option>
+          </select>
+        </div>
+        <div class="wx-select">
+          <label for="windsFcst">Forecast</label>
+          <select id="windsFcst">
+            <option value="06" selected>6 hour</option>
+            <option value="12">12 hour</option>
+            <option value="24">24 hour</option>
+          </select>
+        </div>
+      </div>
+      <div id="windsGrid" class="winds-grid">
+        <p class="wx-text">Loading winds aloft…</p>
+      </div>
+      <p class="fineprint" id="windsUpdated">Source: NOAA Aviation Weather Center — FB Winds</p>
     </section>
 
     <section class="hero">
@@ -620,10 +651,193 @@
       });
     }
 
+    /* ---------- Winds Aloft (FB Winds) ---------- */
+    const WINDS_ALTITUDES = ["3000", "6000", "9000", "12000", "18000", "24000"];
+    const windsStationSel = document.getElementById("windsStation");
+    const windsFcstSel = document.getElementById("windsFcst");
+    const windsGrid = document.getElementById("windsGrid");
+    const windsUpdated = document.getElementById("windsUpdated");
+
+    function parseWindEntry(entry) {
+      if (!entry || entry.trim() === "" || entry.trim() === "----") return null;
+      const s = entry.trim();
+      // "9900" = light and variable
+      if (s === "9900") return { dir: "L&V", speed: "<5", temp: null };
+      // "990004" = light and variable with temp
+      if (s.startsWith("99")) {
+        const temp = s.length > 4 ? parseInt(s.slice(4), 10) : null;
+        const sign = s.length > 4 && s[4] !== "-" && s[4] !== "+" ? "+" : "";
+        return { dir: "L&V", speed: "<5", temp: temp !== null ? `${sign}${temp}°C` : null };
+      }
+      // Standard: DDSSTT or DDSS+TT or DDSS-TT
+      const dir = parseInt(s.slice(0, 2), 10) * 10;
+      let speed = parseInt(s.slice(2, 4), 10);
+      let windDir = dir;
+      // If direction >= 51, subtract 50 from direction and add 100 to speed
+      if (parseInt(s.slice(0, 2), 10) >= 51) {
+        windDir = (parseInt(s.slice(0, 2), 10) - 50) * 10;
+        speed += 100;
+      }
+      let temp = null;
+      if (s.length > 4) {
+        const tempPart = s.slice(4);
+        const match = tempPart.match(/^([+-]?)(\d+)/);
+        if (match) {
+          const val = parseInt(match[2], 10);
+          const sign = match[1] === "-" ? "-" : "+";
+          temp = `${sign}${val}°C`;
+        }
+      }
+      return { dir: `${windDir}°`, speed: `${speed} kt`, temp };
+    }
+
+    function parseFBWinds(text, station) {
+      const lines = text.split("\n");
+      // Find the header line with altitudes
+      let headerIdx = -1;
+      for (let i = 0; i < lines.length; i++) {
+        if (/\b3000\b/.test(lines[i]) && /\b6000\b/.test(lines[i])) {
+          headerIdx = i;
+          break;
+        }
+      }
+      if (headerIdx === -1) return null;
+
+      const header = lines[headerIdx];
+      // Find column positions for each altitude
+      const colPositions = WINDS_ALTITUDES.map(alt => {
+        const idx = header.indexOf(alt);
+        return idx >= 0 ? idx : null;
+      });
+
+      // Find the station line
+      const stUpper = station.toUpperCase();
+      for (let i = headerIdx + 1; i < lines.length; i++) {
+        const line = lines[i];
+        if (line.trimStart().toUpperCase().startsWith(stUpper)) {
+          const results = [];
+          for (let a = 0; a < WINDS_ALTITUDES.length; a++) {
+            if (colPositions[a] === null) { results.push(null); continue; }
+            const start = colPositions[a];
+            const end = a < WINDS_ALTITUDES.length - 1 && colPositions[a + 1] !== null
+              ? colPositions[a + 1]
+              : start + 9;
+            const chunk = line.slice(start, end).trim();
+            results.push(parseWindEntry(chunk));
+          }
+          return results;
+        }
+      }
+      return null;
+    }
+
+    // Also try the JSON endpoint as primary, text as fallback
+    async function loadWindsAloftJson(station, fcst) {
+      const url = `${NOAA_BASE}/windtemp?region=sfo&level=low&fcst=${fcst}&format=json`;
+      const r = await fetch(url);
+      if (!r.ok) throw new Error(`NOAA windtemp ${r.status}`);
+      const data = await r.json();
+      // JSON returns array of objects with station, altitude, dir, speed, temp
+      const stUpper = station.toUpperCase();
+      const stationData = data.filter(d => (d.station || d.icaoId || "").toUpperCase() === stUpper);
+      if (stationData.length > 0) return stationData;
+      throw new Error("Station not found in JSON response");
+    }
+
+    async function loadWindsAloftText(station, fcst) {
+      const url = `${NOAA_BASE}/windtemp?region=sfo&level=low&fcst=${fcst}`;
+      const r = await fetch(url);
+      if (!r.ok) throw new Error(`NOAA windtemp text ${r.status}`);
+      const text = await r.text();
+      return parseFBWinds(text, station);
+    }
+
+    function windDirArrow(dirStr) {
+      if (!dirStr || dirStr === "L&V") return "~";
+      const deg = parseInt(dirStr, 10);
+      if (Number.isNaN(deg)) return "~";
+      // Arrow should point where wind is going TO (opposite of FROM)
+      const arrows = ["↓","↙","←","↖","↑","↗","→","↘"];
+      const idx = Math.round(deg / 45) % 8;
+      return arrows[idx];
+    }
+
+    async function loadWindsAloft() {
+      if (!windsGrid) return;
+      const station = windsStationSel.value;
+      const fcst = windsFcstSel.value;
+      windsGrid.innerHTML = '<p class="wx-text">Loading winds aloft…</p>';
+
+      let winds = null;
+      let validLine = "";
+
+      // Try JSON first, fall back to text parsing
+      try {
+        const jsonData = await loadWindsAloftJson(station, fcst);
+        // JSON format has objects with altitude levels
+        if (Array.isArray(jsonData) && jsonData.length > 0) {
+          // Extract valid time from first entry
+          if (jsonData[0].validTime) validLine = `Valid: ${formatTime(jsonData[0].validTime)}`;
+          // Map JSON to our format
+          winds = WINDS_ALTITUDES.map(alt => {
+            const altNum = parseInt(alt, 10);
+            const entry = jsonData.find(d => d.altitude === altNum || d.level === altNum);
+            if (!entry) return null;
+            return {
+              dir: entry.dir != null ? `${entry.dir}°` : "L&V",
+              speed: entry.sknt != null ? `${entry.sknt} kt` : (entry.speed != null ? `${entry.speed} kt` : "<5"),
+              temp: entry.tmpc != null ? `${entry.tmpc > 0 ? "+" : ""}${entry.tmpc}°C` : null
+            };
+          });
+        }
+      } catch {
+        try {
+          winds = await loadWindsAloftText(station, fcst);
+        } catch { /* both failed */ }
+      }
+
+      if (!winds) {
+        windsGrid.innerHTML = '<p class="wx-text">Unable to load winds aloft data. Try again later.</p>';
+        return;
+      }
+
+      let html = '<div class="winds-table"><div class="winds-header">';
+      html += '<span class="winds-cell winds-label">Altitude</span>';
+      html += '<span class="winds-cell winds-label">Wind</span>';
+      html += '<span class="winds-cell winds-label">Speed</span>';
+      html += '<span class="winds-cell winds-label">Temp</span>';
+      html += '</div>';
+
+      WINDS_ALTITUDES.forEach((alt, i) => {
+        const w = winds[i];
+        const altFmt = parseInt(alt, 10).toLocaleString();
+        if (!w) {
+          html += `<div class="winds-row"><span class="winds-cell">${altFmt} ft</span><span class="winds-cell">—</span><span class="winds-cell">—</span><span class="winds-cell">—</span></div>`;
+        } else {
+          const arrow = windDirArrow(w.dir);
+          html += `<div class="winds-row">`;
+          html += `<span class="winds-cell winds-alt">${altFmt} ft</span>`;
+          html += `<span class="winds-cell"><span class="wind-arrow">${arrow}</span> ${w.dir}</span>`;
+          html += `<span class="winds-cell winds-speed">${w.speed}</span>`;
+          html += `<span class="winds-cell">${w.temp || "—"}</span>`;
+          html += `</div>`;
+        }
+      });
+      html += '</div>';
+      windsGrid.innerHTML = html;
+
+      const timeStr = validLine || `Forecast: ${fcst}hr`;
+      windsUpdated.textContent = `${timeStr} • Station: ${station} • Source: NOAA Aviation Weather Center — FB Winds`;
+    }
+
+    windsStationSel.addEventListener("change", loadWindsAloft);
+    windsFcstSel.addEventListener("change", loadWindsAloft);
+
     select.addEventListener("change", () => renderWeather(select.value));
     refreshBtn.addEventListener("click", loadWeather);
     loadWeather();
     loadSunData();
+    loadWindsAloft();
     markPastEvents();
     setInterval(updateAges, 15000);
     setInterval(loadWeather, REFRESH_INTERVAL);
