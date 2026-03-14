@@ -1080,6 +1080,17 @@ tbody tr:nth-child(even){
   }
 }
 
+/* Side-by-side form row */
+.logbook-form-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1rem;
+}
+
+@media (max-width:420px){
+  .logbook-form-row{ grid-template-columns:1fr; }
+}
+
 /* ===== Logbook entry cards ===== */
 .logbook-entry{
   background:var(--paper);
