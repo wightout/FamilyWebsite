@@ -1,0 +1,14 @@
+{
+  "name": "velvet-runway-family-website",
+  "version": "1.0.0",
+  "description": "Aviation-themed family website with live weather data, photo gallery, flight logbook, and events — deployed on GitHub Pages.",
+  "private": true,
+  "scripts": {
+    "update-aviation": "node scripts/update-aviation.js",
+    "update-gallery": "node scripts/update-gallery.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}
