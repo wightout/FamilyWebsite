@@ -332,6 +332,10 @@
   <script>
     let allEvents = [];
 
+    function escHtml(s) {
+      return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
     const airportData = {
       KPOC: { name: "Brackett Field", lat: 34.0917, lng: -117.7831 },
       KCCB: { name: "Cable Airport", lat: 34.1114, lng: -117.6878 },
@@ -479,13 +483,13 @@
       const d = decodeMetar(weatherData.airports[code].metar);
       if (!d) { decodedEl.innerHTML = ""; return; }
       const items = [];
-      if (d.wind) items.push(`<span class="decoded-item"><strong>Wind</strong> ${d.wind}</span>`);
-      if (d.visibility) items.push(`<span class="decoded-item"><strong>Vis</strong> ${d.visibility}</span>`);
-      if (d.ceiling) items.push(`<span class="decoded-item"><strong>Ceiling</strong> ${d.ceiling}</span>`);
-      else if (d.clouds) items.push(`<span class="decoded-item"><strong>Sky</strong> ${d.clouds[0]}</span>`);
-      if (d.temp) items.push(`<span class="decoded-item"><strong>Temp</strong> ${d.temp}</span>`);
-      if (d.altimeter) items.push(`<span class="decoded-item"><strong>Altimeter</strong> ${d.altimeter}</span>`);
-      if (d.weather) items.push(`<span class="decoded-item"><strong>Wx</strong> ${d.weather}</span>`);
+      if (d.wind) items.push(`<span class="decoded-item"><strong>Wind</strong> ${escHtml(d.wind)}</span>`);
+      if (d.visibility) items.push(`<span class="decoded-item"><strong>Vis</strong> ${escHtml(d.visibility)}</span>`);
+      if (d.ceiling) items.push(`<span class="decoded-item"><strong>Ceiling</strong> ${escHtml(d.ceiling)}</span>`);
+      else if (d.clouds) items.push(`<span class="decoded-item"><strong>Sky</strong> ${escHtml(d.clouds[0])}</span>`);
+      if (d.temp) items.push(`<span class="decoded-item"><strong>Temp</strong> ${escHtml(d.temp)}</span>`);
+      if (d.altimeter) items.push(`<span class="decoded-item"><strong>Altimeter</strong> ${escHtml(d.altimeter)}</span>`);
+      if (d.weather) items.push(`<span class="decoded-item"><strong>Wx</strong> ${escHtml(d.weather)}</span>`);
       // Flight category
       const vis = d.visibility ? parseFloat(d.visibility) : 99;
       const ceil = d.ceiling ? parseInt(d.ceiling.replace(/,/g, ""), 10) : 99999;
@@ -587,7 +591,7 @@
 
       if (weatherData?.updated) {
         const btn = refreshBtn.outerHTML;
-        updatedEl.innerHTML = `Last updated: ${formatTime(weatherData.updated)} • Source: NOAA Aviation Weather Center ${btn}`;
+        updatedEl.innerHTML = `Last updated: ${escHtml(formatTime(weatherData.updated))} • Source: NOAA Aviation Weather Center ${btn}`;
         // re-bind after innerHTML replace
         document.getElementById("wxRefresh").addEventListener("click", loadWeather);
       }
@@ -622,25 +626,6 @@
         }
       }));
       grid.innerHTML = cards.join("");
-    }
-
-    /* ---------- Stale events marker ---------- */
-    function markPastEvents() {
-      document.querySelectorAll(".event-card").forEach(card => {
-        const metaEl = card.querySelector(".card-meta");
-        if (!metaEl) return;
-        const text = metaEl.textContent;
-        const match = text.match(/(\w+),\s+(\w+)\s+(\d+),\s+(\d{4})/);
-        if (!match) return;
-        const eventDate = new Date(`${match[2]} ${match[3]}, ${match[4]}`);
-        if (eventDate < new Date()) {
-          card.classList.add("past-event");
-          const badge = document.createElement("span");
-          badge.className = "past-badge";
-          badge.textContent = "Past Event";
-          metaEl.prepend(badge);
-        }
-      });
     }
 
     /* ---------- Events JSON loader ---------- */
@@ -946,9 +931,9 @@
           const arrow = windDirArrow(w.dir);
           html += `<div class="winds-row">`;
           html += `<span class="winds-cell winds-alt">${altFmt} ft</span>`;
-          html += `<span class="winds-cell"><span class="wind-arrow">${arrow}</span> ${w.dir}</span>`;
-          html += `<span class="winds-cell winds-speed">${w.speed}</span>`;
-          html += `<span class="winds-cell">${w.temp || "—"}</span>`;
+          html += `<span class="winds-cell"><span class="wind-arrow">${escHtml(arrow)}</span> ${escHtml(w.dir)}</span>`;
+          html += `<span class="winds-cell winds-speed">${escHtml(w.speed)}</span>`;
+          html += `<span class="winds-cell">${w.temp ? escHtml(w.temp) : "—"}</span>`;
           html += `</div>`;
         }
       });
@@ -1160,7 +1145,10 @@
         lines.push("BEGIN:VEVENT");
         lines.push(`UID:${uid}`);
         lines.push(`DTSTART;VALUE=DATE:${dtstart}`);
-        lines.push(`DTEND;VALUE=DATE:${dtstart}`);
+        const endD = new Date(`${dtstart.slice(0,4)}-${dtstart.slice(4,6)}-${dtstart.slice(6,8)}`);
+        endD.setDate(endD.getDate() + 1);
+        const dtend = `${endD.getFullYear()}${pad(endD.getMonth()+1)}${pad(endD.getDate())}`;
+        lines.push(`DTEND;VALUE=DATE:${dtend}`);
         lines.push(`SUMMARY:${summary}`);
         if (description) lines.push(`DESCRIPTION:${description}`);
         if (location) lines.push(`LOCATION:${location}`);
