@@ -261,6 +261,16 @@
             Date &amp; location
             <input id="logbookDateLoc" type="text" placeholder="Feb 18 • Palo Alto" />
           </label>
+          <div class="logbook-form-row">
+            <label>
+              Aircraft
+              <input id="logbookAircraft" type="text" placeholder="Cessna 172" />
+            </label>
+            <label>
+              Duration
+              <input id="logbookDuration" type="text" placeholder="44 min" />
+            </label>
+          </div>
           <label>
             Memory
             <textarea id="logbookMemory" rows="4" placeholder="Favorite moment from the flight..."></textarea>
@@ -963,6 +973,8 @@
     const logbookSaveMsg = document.getElementById("logbookSaveMsg");
     const logbookNameEl = document.getElementById("logbookName");
     const logbookDateLocEl = document.getElementById("logbookDateLoc");
+    const logbookAircraftEl = document.getElementById("logbookAircraft");
+    const logbookDurationEl = document.getElementById("logbookDuration");
     const logbookMemoryEl = document.getElementById("logbookMemory");
 
     function getLocalEntries() {
@@ -1068,6 +1080,8 @@
       logbookSaveBtn.addEventListener("click", async () => {
         const name = logbookNameEl ? logbookNameEl.value.trim() : "";
         const dateLoc = logbookDateLocEl ? logbookDateLocEl.value.trim() : "";
+        const aircraft = logbookAircraftEl ? logbookAircraftEl.value.trim() : "";
+        const duration = logbookDurationEl ? logbookDurationEl.value.trim() : "";
         const memory = logbookMemoryEl ? logbookMemoryEl.value.trim() : "";
 
         if (!name) {
@@ -1086,8 +1100,8 @@
           name,
           date: datePart,
           location: locationPart,
-          aircraft: "",
-          duration: "",
+          aircraft,
+          duration,
           memory
         };
 
@@ -1098,6 +1112,8 @@
         // Clear the form
         if (logbookNameEl) logbookNameEl.value = "";
         if (logbookDateLocEl) logbookDateLocEl.value = "";
+        if (logbookAircraftEl) logbookAircraftEl.value = "";
+        if (logbookDurationEl) logbookDurationEl.value = "";
         if (logbookMemoryEl) logbookMemoryEl.value = "";
 
         showSaveMsg("Flight memory saved!", false);
