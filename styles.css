@@ -912,3 +912,96 @@ tbody tr:nth-child(even){
     align-self:flex-start;
   }
 }
+
+/* ===== Logbook entry cards ===== */
+.logbook-entry{
+  background:var(--paper);
+  border-radius:20px;
+  padding:1.3rem 1.5rem;
+  border:1px solid rgba(31,27,23,0.08);
+  box-shadow:0 8px 24px rgba(31,27,23,0.08);
+  display:flex;
+  flex-direction:column;
+  gap:0.5rem;
+  transition:box-shadow 0.2s;
+}
+
+.logbook-entry:hover{
+  box-shadow:0 14px 32px rgba(31,27,23,0.13);
+}
+
+.logbook-entry-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:0.8rem;
+}
+
+.logbook-entry-name{
+  font-family:"Playfair Display","Times New Roman",serif;
+  font-size:1.05rem;
+  font-weight:600;
+  color:var(--ink);
+}
+
+.logbook-entry-badge{
+  font-size:0.65rem;
+  text-transform:uppercase;
+  letter-spacing:0.15em;
+  background:rgba(42,77,79,0.1);
+  color:var(--teal);
+  padding:0.25rem 0.6rem;
+  border-radius:999px;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+
+.logbook-entry-meta{
+  font-size:0.78rem;
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+  color:var(--ink-soft);
+  margin:0;
+}
+
+.logbook-entry-memory{
+  font-size:0.92rem;
+  color:var(--ink-soft);
+  font-style:italic;
+  margin:0.2rem 0 0;
+  padding-top:0.6rem;
+  border-top:1px solid rgba(31,27,23,0.07);
+}
+
+/* Empty state */
+.logbook-empty{
+  font-size:0.9rem;
+  color:var(--ink-soft);
+  font-style:italic;
+  margin:0.5rem 0;
+}
+
+/* Save feedback message */
+.logbook-save-msg{
+  min-height:1.6rem;
+  font-size:0.83rem;
+  font-weight:600;
+  border-radius:10px;
+  padding:0;
+  margin-bottom:0;
+  transition:opacity 0.3s;
+}
+
+.logbook-save-msg--ok{
+  color:#155724;
+  background:#d4edda;
+  border:1px solid #b1dfbb;
+  padding:0.45rem 0.8rem;
+}
+
+.logbook-save-msg--error{
+  color:#721c24;
+  background:#f8d7da;
+  border:1px solid #f1aeb5;
+  padding:0.45rem 0.8rem;
+}

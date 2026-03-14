@@ -257,37 +257,27 @@
           Capture tail numbers, routes, notes, and favorite moments. Each entry becomes a
           keepsake you can sort by destination, aircraft, or season.
         </p>
-        <div class="logbook">
-          <div>
-            <p class="log-label">Last Flight</p>
-            <p class="log-value">Bay Tour • Cessna 172 • 44 minutes</p>
-          </div>
-          <div>
-            <p class="log-label">Favorite View</p>
-            <p class="log-value">Golden Gate pass at sunset</p>
-          </div>
-          <div>
-            <p class="log-label">Next Adventure</p>
-            <p class="log-value">Santa Barbara coastal hop</p>
-          </div>
+        <div class="logbook" id="logbookList">
+          <p class="logbook-empty">Loading flight entries…</p>
         </div>
       </div>
       <div class="logbook-panel">
         <p class="panel-title">Add A Flight Memory</p>
-        <form>
+        <div class="logbook-save-msg" id="logbookSaveMsg" aria-live="polite"></div>
+        <form id="logbookForm">
           <label>
             Flight name
-            <input type="text" placeholder="Evening Loop Over the Bay" />
+            <input id="logbookName" type="text" placeholder="Evening Loop Over the Bay" />
           </label>
           <label>
-            Date & location
-            <input type="text" placeholder="Feb 18 • Palo Alto" />
+            Date &amp; location
+            <input id="logbookDateLoc" type="text" placeholder="Feb 18 • Palo Alto" />
           </label>
           <label>
             Memory
-            <textarea rows="4" placeholder="Favorite moment from the flight..."></textarea>
+            <textarea id="logbookMemory" rows="4" placeholder="Favorite moment from the flight..."></textarea>
           </label>
-          <button class="primary-cta" type="button">Save Entry</button>
+          <button class="primary-cta" id="logbookSaveBtn" type="button">Save Entry</button>
         </form>
       </div>
     </section>
@@ -841,6 +831,159 @@
     markPastEvents();
     setInterval(updateAges, 15000);
     setInterval(loadWeather, REFRESH_INTERVAL);
+
+    /* ========== LOGBOOK ========== */
+    const LOGBOOK_KEY = "velvetrunway-logbook";
+    const logbookList = document.getElementById("logbookList");
+    const logbookSaveBtn = document.getElementById("logbookSaveBtn");
+    const logbookSaveMsg = document.getElementById("logbookSaveMsg");
+    const logbookNameEl = document.getElementById("logbookName");
+    const logbookDateLocEl = document.getElementById("logbookDateLoc");
+    const logbookMemoryEl = document.getElementById("logbookMemory");
+
+    function getLocalEntries() {
+      try {
+        const raw = localStorage.getItem(LOGBOOK_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch { return []; }
+    }
+
+    function saveLocalEntries(entries) {
+      try { localStorage.setItem(LOGBOOK_KEY, JSON.stringify(entries)); } catch { /* quota */ }
+    }
+
+    // Safe DOM helper: set text content on an element
+    function setText(el, text) { el.textContent = text || ""; }
+
+    function buildEntryCard(entry) {
+      const article = document.createElement("article");
+      article.className = "logbook-entry";
+
+      const header = document.createElement("div");
+      header.className = "logbook-entry-header";
+
+      const nameSpan = document.createElement("span");
+      nameSpan.className = "logbook-entry-name";
+      setText(nameSpan, entry.name);
+
+      const badge = document.createElement("span");
+      badge.className = "logbook-entry-badge";
+      setText(badge, entry.aircraft || "Flight");
+
+      header.appendChild(nameSpan);
+      header.appendChild(badge);
+      article.appendChild(header);
+
+      const dateLocParts = [entry.date, entry.location].filter(Boolean).join(" \u00B7 ");
+      const subline = [entry.aircraft, entry.duration].filter(Boolean).join(" \u00B7 ");
+      const metaText = dateLocParts + (subline ? " \u00B7 " + subline : "");
+
+      const meta = document.createElement("p");
+      meta.className = "logbook-entry-meta";
+      setText(meta, metaText);
+      article.appendChild(meta);
+
+      if (entry.memory) {
+        const mem = document.createElement("p");
+        mem.className = "logbook-entry-memory";
+        setText(mem, entry.memory);
+        article.appendChild(mem);
+      }
+
+      return article;
+    }
+
+    function renderLogbook(entries) {
+      if (!logbookList) return;
+      // Clear current contents
+      while (logbookList.firstChild) logbookList.removeChild(logbookList.firstChild);
+
+      if (!entries || entries.length === 0) {
+        const empty = document.createElement("p");
+        empty.className = "logbook-empty";
+        setText(empty, "No flights logged yet \u2014 add your first memory above!");
+        logbookList.appendChild(empty);
+        return;
+      }
+
+      entries.forEach(entry => logbookList.appendChild(buildEntryCard(entry)));
+    }
+
+    async function loadLogbook() {
+      let seedEntries = [];
+      try {
+        const r = await fetch("data/logbook.json", { cache: "no-store" });
+        if (r.ok) {
+          const data = await r.json();
+          seedEntries = Array.isArray(data.entries) ? data.entries : [];
+        }
+      } catch { /* fetch failed, use empty */ }
+
+      const localEntries = getLocalEntries();
+
+      // Seed entries form the base; local entries with new ids are appended after
+      const seedIds = new Set(seedEntries.map(e => String(e.id)));
+      const uniqueLocal = localEntries.filter(e => !seedIds.has(String(e.id)));
+      const allEntries = [...seedEntries, ...uniqueLocal];
+
+      renderLogbook(allEntries);
+    }
+
+    function showSaveMsg(text, isError) {
+      if (!logbookSaveMsg) return;
+      setText(logbookSaveMsg, text);
+      logbookSaveMsg.className = "logbook-save-msg" + (isError ? " logbook-save-msg--error" : " logbook-save-msg--ok");
+      clearTimeout(logbookSaveMsg._timer);
+      logbookSaveMsg._timer = setTimeout(() => {
+        setText(logbookSaveMsg, "");
+        logbookSaveMsg.className = "logbook-save-msg";
+      }, 3500);
+    }
+
+    if (logbookSaveBtn) {
+      logbookSaveBtn.addEventListener("click", async () => {
+        const name = logbookNameEl ? logbookNameEl.value.trim() : "";
+        const dateLoc = logbookDateLocEl ? logbookDateLocEl.value.trim() : "";
+        const memory = logbookMemoryEl ? logbookMemoryEl.value.trim() : "";
+
+        if (!name) {
+          showSaveMsg("Please enter a flight name.", true);
+          if (logbookNameEl) logbookNameEl.focus();
+          return;
+        }
+
+        // Parse date and location from combined field (split on bullet or hyphen)
+        const parts = dateLoc ? dateLoc.split(/\s*[\u2022\-]\s*/) : [];
+        const datePart = parts[0] ? parts[0].trim() : "";
+        const locationPart = parts[1] ? parts[1].trim() : "";
+
+        const newEntry = {
+          id: "local-" + Date.now(),
+          name,
+          date: datePart,
+          location: locationPart,
+          aircraft: "",
+          duration: "",
+          memory
+        };
+
+        const localEntries = getLocalEntries();
+        localEntries.push(newEntry);
+        saveLocalEntries(localEntries);
+
+        // Clear the form
+        if (logbookNameEl) logbookNameEl.value = "";
+        if (logbookDateLocEl) logbookDateLocEl.value = "";
+        if (logbookMemoryEl) logbookMemoryEl.value = "";
+
+        showSaveMsg("Flight memory saved!", false);
+
+        // Re-render with merged data
+        await loadLogbook();
+      });
+    }
+
+    loadLogbook();
   </script>
 </body>
 </html>
