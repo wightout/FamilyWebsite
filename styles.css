@@ -278,6 +278,29 @@ body.lightbox-active{
   border:0;
 }
 
+/* Skip-to-main-content link — visually hidden until focused */
+.skip-link{
+  position:absolute;
+  top:-100%;
+  left:1rem;
+  z-index:9999;
+  background:var(--teal);
+  color:#fff;
+  padding:0.6rem 1.2rem;
+  border-radius:0 0 8px 8px;
+  font-weight:600;
+  font-size:0.9rem;
+  text-decoration:none;
+  border-bottom:none;
+  transition:top 0.15s ease;
+}
+
+.skip-link:focus{
+  top:0;
+  outline:3px solid var(--sun);
+  outline-offset:2px;
+}
+
 .primary-cta{
   background:var(--teal);
   color:#fff;
