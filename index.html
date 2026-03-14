@@ -4,9 +4,27 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Velvet Runway — The Enriquez Family</title>
+
+  <!-- SEO -->
+  <meta name="description" content="Velvet Runway is the Enriquez family's private aviation hub — tracking local airport events, flight logbook entries, METAR/TAF weather, and family photo memories." />
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#2a4d4f" />
+  <link rel="canonical" href="https://wightout.github.io/FamilyWebsite/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://wightout.github.io/FamilyWebsite/" />
+  <meta property="og:title" content="Velvet Runway — The Enriquez Family" />
+  <meta property="og:description" content="The Enriquez family aviation hub: local weather, flight logbook, events, and photo hangar." />
+
+  <!-- Performance: preconnect for Google Fonts (already loaded in styles.css) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <div class="orbital-grid" aria-hidden="true"></div>
   <header class="site-header">
     <div class="brand">
@@ -16,7 +34,7 @@
         <h1>Velvet Runway</h1>
       </div>
     </div>
-    <nav class="site-nav">
+    <nav class="site-nav" role="navigation" aria-label="Main navigation">
       <a href="#weather">METAR/TAF</a>
       <a href="#sun">Sun</a>
       <a href="#winds">Winds Aloft</a>
@@ -34,7 +52,7 @@
     </form>
   </header>
 
-  <main>
+  <main id="main-content">
     <section id="weather" class="section weather">
       <div class="section-heading">
         <h3>Local METAR &amp; TAF</h3>
@@ -78,7 +96,7 @@
       </div>
       <div class="wx-decoded" id="wxDecoded"></div>
       <p class="fineprint" id="wxUpdated">Last updated: — • Source: NOAA Aviation Weather Center
-        <button class="wx-refresh-btn" id="wxRefresh" type="button" title="Refresh weather">↻ Refresh</button>
+        <button class="wx-refresh-btn" id="wxRefresh" type="button" title="Refresh weather" aria-label="Refresh weather data">↻ Refresh</button>
       </p>
     </section>
 
@@ -260,27 +278,27 @@
       <div class="gallery-grid">
         <!-- GALLERY:START -->
         <figure class="gallery-tile">
-          <img src="images/warbird-field-selfie.jpg" alt="Warbird Field Selfie." />
+          <img src="images/warbird-field-selfie.jpg" alt="Warbird Field Selfie." loading="lazy" decoding="async" />
           <figcaption>Warbird Field Selfie</figcaption>
         </figure>
         <figure class="gallery-tile">
-          <img src="images/family-plane-portrait.jpg" alt="Family Plane Portrait." />
+          <img src="images/family-plane-portrait.jpg" alt="Family Plane Portrait." loading="lazy" decoding="async" />
           <figcaption>Family Plane Portrait</figcaption>
         </figure>
         <figure class="gallery-tile">
-          <img src="images/runway-plane-portrait.jpg" alt="Runway Plane Portrait." />
+          <img src="images/runway-plane-portrait.jpg" alt="Runway Plane Portrait." loading="lazy" decoding="async" />
           <figcaption>Runway Plane Portrait</figcaption>
         </figure>
         <figure class="gallery-tile">
-          <img src="images/cockpit-kid-adventure.jpg" alt="Cockpit Kid Adventure." />
+          <img src="images/cockpit-kid-adventure.jpg" alt="Cockpit Kid Adventure." loading="lazy" decoding="async" />
           <figcaption>Cockpit Kid Adventure</figcaption>
         </figure>
         <figure class="gallery-tile">
-          <img src="images/museum-jet-moment.jpg" alt="Museum Jet Moment." />
+          <img src="images/museum-jet-moment.jpg" alt="Museum Jet Moment." loading="lazy" decoding="async" />
           <figcaption>Museum Jet Moment</figcaption>
         </figure>
         <figure class="gallery-tile">
-          <img src="images/helicopter-family-visit.jpg" alt="Helicopter Family Visit." />
+          <img src="images/helicopter-family-visit.jpg" alt="Helicopter Family Visit." loading="lazy" decoding="async" />
           <figcaption>Helicopter Family Visit</figcaption>
         </figure>
         <!-- GALLERY:END -->
