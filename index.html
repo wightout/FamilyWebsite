@@ -11,6 +11,10 @@
   <meta name="theme-color" content="#2a4d4f" />
   <link rel="canonical" href="https://wightout.github.io/FamilyWebsite/" />
 
+  <!-- Favicon -->
+  <link rel="icon" href="images/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="images/favicon.svg" />
+
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://wightout.github.io/FamilyWebsite/" />
@@ -43,7 +47,7 @@
       <a href="#logbook">Logbook</a>
       <a href="#gallery">Gallery</a>
     </nav>
-    <form class="newsletter-form" id="newsletterForm" novalidate>
+    <form class="newsletter-form" id="newsletterForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" novalidate>
       <label class="sr-only" for="newsletterEmail">Email address</label>
       <input id="newsletterEmail" name="email" type="email" placeholder="Email for the quarterly aviation roundup" required />
       <span class="newsletter-note">Quarterly newsletter with our family aviation highlights.</span>
@@ -288,27 +292,27 @@
       <div class="gallery-grid">
         <!-- GALLERY:START -->
         <figure class="gallery-tile">
-          <img src="images/warbird-field-selfie.jpg" alt="Warbird Field Selfie." loading="lazy" decoding="async" />
+          <img src="images/warbird-field-selfie.jpg" alt="Warbird Field Selfie." width="1600" height="1200" loading="lazy" decoding="async" />
           <figcaption>Warbird Field Selfie</figcaption>
         </figure>
         <figure class="gallery-tile">
-          <img src="images/family-plane-portrait.jpg" alt="Family Plane Portrait." loading="lazy" decoding="async" />
+          <img src="images/family-plane-portrait.jpg" alt="Family Plane Portrait." width="1600" height="1066" loading="lazy" decoding="async" />
           <figcaption>Family Plane Portrait</figcaption>
         </figure>
         <figure class="gallery-tile">
-          <img src="images/runway-plane-portrait.jpg" alt="Runway Plane Portrait." loading="lazy" decoding="async" />
+          <img src="images/runway-plane-portrait.jpg" alt="Runway Plane Portrait." width="1600" height="1200" loading="lazy" decoding="async" />
           <figcaption>Runway Plane Portrait</figcaption>
         </figure>
         <figure class="gallery-tile">
-          <img src="images/cockpit-kid-adventure.jpg" alt="Cockpit Kid Adventure." loading="lazy" decoding="async" />
+          <img src="images/cockpit-kid-adventure.jpg" alt="Cockpit Kid Adventure." width="1280" height="720" loading="lazy" decoding="async" />
           <figcaption>Cockpit Kid Adventure</figcaption>
         </figure>
         <figure class="gallery-tile">
-          <img src="images/museum-jet-moment.jpg" alt="Museum Jet Moment." loading="lazy" decoding="async" />
+          <img src="images/museum-jet-moment.jpg" alt="Museum Jet Moment." width="1600" height="1200" loading="lazy" decoding="async" />
           <figcaption>Museum Jet Moment</figcaption>
         </figure>
         <figure class="gallery-tile">
-          <img src="images/helicopter-family-visit.jpg" alt="Helicopter Family Visit." loading="lazy" decoding="async" />
+          <img src="images/helicopter-family-visit.jpg" alt="Helicopter Family Visit." width="1600" height="1200" loading="lazy" decoding="async" />
           <figcaption>Helicopter Family Visit</figcaption>
         </figure>
         <!-- GALLERY:END -->
@@ -1208,50 +1212,53 @@
       });
     }
 
-    /* ========== NEWSLETTER FORM ========== */
-    const NEWSLETTER_KEY = "velvetrunway-newsletter-signups";
+    /* ========== NEWSLETTER FORM (Formspree) ========== */
     const newsletterForm = document.getElementById("newsletterForm");
     const newsletterBtn = document.getElementById("newsletterBtn");
     const newsletterEmailEl = document.getElementById("newsletterEmail");
     const newsletterSuccess = document.getElementById("newsletterSuccess");
 
-    function getNewsletterSignups() {
-      try {
-        const raw = localStorage.getItem(NEWSLETTER_KEY);
-        return raw ? JSON.parse(raw) : [];
-      } catch { return []; }
-    }
-
-    function setNewsletterSignedUp() {
+    function setNewsletterSignedUp(msg) {
       if (!newsletterBtn || !newsletterEmailEl) return;
       newsletterBtn.textContent = "You're on the list!";
       newsletterBtn.disabled = true;
       newsletterEmailEl.disabled = true;
       if (newsletterSuccess) {
-        newsletterSuccess.textContent = "Thanks! We'll add you to our flight list.";
+        newsletterSuccess.textContent = msg || "Thanks! We'll add you to our flight list.";
       }
+      try { localStorage.setItem("velvetrunway-newsletter-done", "1"); } catch { /* ok */ }
     }
 
-    // On page load: check if already signed up
-    (function initNewsletter() {
-      const signups = getNewsletterSignups();
-      if (signups.length > 0) {
-        setNewsletterSignedUp();
-      }
-    })();
+    // Restore signed-up state on page load
+    if (localStorage.getItem("velvetrunway-newsletter-done")) {
+      setNewsletterSignedUp();
+    }
 
     if (newsletterForm) {
-      newsletterForm.addEventListener("submit", (e) => {
+      newsletterForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const email = newsletterEmailEl ? newsletterEmailEl.value.trim() : "";
         if (!email) return;
 
-        const signups = getNewsletterSignups();
-        if (!signups.includes(email)) {
-          signups.push(email);
-          try { localStorage.setItem(NEWSLETTER_KEY, JSON.stringify(signups)); } catch { /* quota */ }
+        newsletterBtn.disabled = true;
+        newsletterBtn.textContent = "Sending\u2026";
+
+        try {
+          const resp = await fetch(newsletterForm.action, {
+            method: "POST",
+            headers: { "Accept": "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
+          });
+          if (resp.ok) {
+            setNewsletterSignedUp("Thanks! You're on our flight list.");
+          } else {
+            newsletterBtn.textContent = "Oops \u2014 try again";
+            newsletterBtn.disabled = false;
+          }
+        } catch {
+          newsletterBtn.textContent = "Oops \u2014 try again";
+          newsletterBtn.disabled = false;
         }
-        setNewsletterSignedUp();
       });
     }
 
