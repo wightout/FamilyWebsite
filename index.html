@@ -123,8 +123,8 @@
         <div class="wx-select">
           <label for="windsStation">Station</label>
           <select id="windsStation">
-            <option value="LAX" selected>Los Angeles (LAX)</option>
-            <option value="DAG">Daggett (DAG)</option>
+            <option value="ONT" selected>Ontario (ONT)</option>
+            <option value="WJF">Lancaster (WJF)</option>
             <option value="SBA">Santa Barbara (SBA)</option>
             <option value="SAN">San Diego (SAN)</option>
           </select>
@@ -890,6 +890,16 @@
       return arrows[idx];
     }
 
+    async function loadWindsAloftStatic(station, fcst) {
+      const r = await fetch("data/winds.json", { cache: "no-store" });
+      if (!r.ok) throw new Error("Static winds data missing");
+      const data = await r.json();
+      const key = `${station}_${fcst}`;
+      const entries = data.winds[key];
+      if (!entries) throw new Error("Station/fcst not in static data");
+      return { winds: entries, updated: data.updated };
+    }
+
     async function loadWindsAloft() {
       if (!windsGrid) return;
       const station = windsStationSel.value;
@@ -899,14 +909,11 @@
       let winds = null;
       let validLine = "";
 
-      // Try JSON first, fall back to text parsing
+      // Try live API first, fall back to text parsing, then static cache
       try {
         const jsonData = await loadWindsAloftJson(station, fcst);
-        // JSON format has objects with altitude levels
         if (Array.isArray(jsonData) && jsonData.length > 0) {
-          // Extract valid time from first entry
           if (jsonData[0].validTime) validLine = `Valid: ${formatTime(jsonData[0].validTime)}`;
-          // Map JSON to our format
           winds = WINDS_ALTITUDES.map(alt => {
             const altNum = parseInt(alt, 10);
             const entry = jsonData.find(d => d.altitude === altNum || d.level === altNum);
@@ -921,7 +928,21 @@
       } catch {
         try {
           winds = await loadWindsAloftText(station, fcst);
-        } catch { /* both failed */ }
+        } catch {
+          // Both live APIs failed (likely CORS), use static cache
+          try {
+            const staticData = await loadWindsAloftStatic(station, fcst);
+            winds = staticData.winds.map(w => {
+              if (!w) return null;
+              return {
+                dir: w.dir === "L&V" ? "L&V" : `${w.dir}°`,
+                speed: w.speed === "<5" ? "<5" : `${w.speed} kt`,
+                temp: w.temp != null ? `${w.temp > 0 ? "+" : ""}${w.temp}°C` : null
+              };
+            });
+            if (staticData.updated) validLine = `Cached: ${formatTime(staticData.updated)}`;
+          } catch { /* all sources failed */ }
+        }
       }
 
       if (!winds) {
