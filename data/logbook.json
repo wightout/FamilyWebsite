@@ -1,0 +1,31 @@
+{
+  "entries": [
+    {
+      "id": "1",
+      "name": "Bay Tour",
+      "date": "Feb 18, 2026",
+      "location": "Palo Alto",
+      "aircraft": "Cessna 172",
+      "duration": "44 min",
+      "memory": "Golden Gate pass at sunset — the light was unreal."
+    },
+    {
+      "id": "2",
+      "name": "Santa Barbara Coastal Hop",
+      "date": "Jan 30, 2026",
+      "location": "Santa Barbara",
+      "aircraft": "Cessna 172",
+      "duration": "1 hr 12 min",
+      "memory": "Flew low along the coast just south of Point Conception. The kids were glued to the windows the whole time."
+    },
+    {
+      "id": "3",
+      "name": "Brackett Pattern Work",
+      "date": "Jan 10, 2026",
+      "location": "La Verne",
+      "aircraft": "Cessna 172",
+      "duration": "58 min",
+      "memory": "Six touch-and-goes on a cool, calm morning. Mountains were crystal clear after the last rain."
+    }
+  ]
+}
