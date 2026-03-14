@@ -641,6 +641,136 @@ tbody tr:nth-child(even){
   flex-wrap:wrap;
 }
 
+/* Decoded METAR summary */
+.wx-decoded{
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.6rem;
+  margin-top:0.5rem;
+}
+
+.decoded-item{
+  background:var(--paper);
+  padding:0.4rem 0.8rem;
+  border-radius:12px;
+  font-size:0.82rem;
+  border:1px solid rgba(31,27,23,0.08);
+  box-shadow:0 4px 10px rgba(31,27,23,0.06);
+}
+
+.decoded-item strong{
+  color:var(--teal);
+  margin-right:0.3rem;
+  text-transform:uppercase;
+  font-size:0.7rem;
+  letter-spacing:0.08em;
+}
+
+.flight-cat{
+  font-weight:700;
+  font-size:0.75rem;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+}
+
+.cat-vfr{ background:#d4edda; color:#155724; border-color:#b1dfbb; }
+.cat-mvfr{ background:#cce5ff; color:#004085; border-color:#9fcdff; }
+.cat-ifr{ background:#f8d7da; color:#721c24; border-color:#f1aeb5; }
+.cat-lifr{ background:#e8d0f0; color:#4a1568; border-color:#d3a8e8; }
+
+/* Refresh button */
+.wx-refresh-btn{
+  background:none;
+  border:1px solid rgba(31,27,23,0.2);
+  border-radius:999px;
+  padding:0.2rem 0.6rem;
+  font-size:0.75rem;
+  cursor:pointer;
+  color:var(--teal);
+  font-weight:600;
+  margin-left:0.5rem;
+  transition:transform 0.3s;
+}
+
+.wx-refresh-btn:hover{
+  background:rgba(42,77,79,0.08);
+}
+
+.wx-refresh-btn.spinning{
+  animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+  from{transform:rotate(0deg)}
+  to{transform:rotate(360deg)}
+}
+
+/* Sunrise / Sunset section */
+.sun-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:1.5rem;
+}
+
+.sun-card{
+  background:var(--paper);
+  padding:1.4rem 1.6rem;
+  border-radius:20px;
+  border:1px solid rgba(31,27,23,0.08);
+  box-shadow:0 12px 30px rgba(31,27,23,0.08);
+}
+
+.sun-card h4{
+  display:flex;
+  align-items:center;
+  gap:0.6rem;
+  margin-bottom:1rem;
+}
+
+.sun-times{
+  display:grid;
+  gap:0.5rem;
+}
+
+.sun-times > div{
+  display:flex;
+  justify-content:space-between;
+  padding:0.25rem 0;
+  border-bottom:1px solid rgba(31,27,23,0.06);
+}
+
+.sun-label{
+  font-size:0.78rem;
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+  color:var(--ink-soft);
+}
+
+.sun-value{
+  font-weight:600;
+  font-size:0.9rem;
+  color:var(--ink);
+}
+
+/* Past events */
+.past-event{
+  opacity:0.6;
+  position:relative;
+}
+
+.past-badge{
+  display:inline-block;
+  background:var(--coral);
+  color:#fff;
+  font-size:0.6rem;
+  padding:0.2rem 0.5rem;
+  border-radius:999px;
+  text-transform:uppercase;
+  letter-spacing:0.1em;
+  margin-right:0.5rem;
+  vertical-align:middle;
+}
+
 @media (max-width:900px){
   .site-header{
     flex-direction:column;

@@ -18,6 +18,7 @@
     </div>
     <nav class="site-nav">
       <a href="#weather">METAR/TAF</a>
+      <a href="#sun">Sun</a>
       <a href="#airports">Airports</a>
       <a href="#events">Events</a>
       <a href="#logbook">Logbook</a>
@@ -75,7 +76,20 @@
           </div>
         </article>
       </div>
-      <p class="fineprint" id="wxUpdated">Last updated: — • Source: NOAA Aviation Weather Center</p>
+      <div class="wx-decoded" id="wxDecoded"></div>
+      <p class="fineprint" id="wxUpdated">Last updated: — • Source: NOAA Aviation Weather Center
+        <button class="wx-refresh-btn" id="wxRefresh" type="button" title="Refresh weather">↻ Refresh</button>
+      </p>
+    </section>
+
+    <section id="sun" class="section sun-section">
+      <div class="section-heading">
+        <h3>Sun &amp; Twilight</h3>
+        <p>Civil twilight times for your nearest airports — essential for VFR planning.</p>
+      </div>
+      <div class="sun-grid" id="sunGrid">
+        <p class="wx-text">Loading sun data…</p>
+      </div>
     </section>
 
     <section class="hero">
@@ -296,10 +310,14 @@
   </footer>
   <script>
     const airportData = {
-      KPOC: { name: "Brackett Field" },
-      KCCB: { name: "Cable Airport" },
-      KRAL: { name: "Riverside Municipal" }
+      KPOC: { name: "Brackett Field", lat: 34.0917, lng: -117.7831 },
+      KCCB: { name: "Cable Airport", lat: 34.1114, lng: -117.6878 },
+      KRAL: { name: "Riverside Municipal", lat: 33.9519, lng: -117.4451 }
     };
+    const stations = Object.keys(airportData);
+    const NOAA_BASE = "https://aviationweather.gov/api/data";
+    const STALE_THRESHOLDS = { metar: 60 * 60 * 1000, taf: 60 * 60 * 1000 };
+    const REFRESH_INTERVAL = 5 * 60 * 1000;
 
     const select = document.getElementById("airportSelect");
     const nameEl = document.getElementById("wxName");
@@ -311,95 +329,162 @@
     const metarBlock = metarEl?.closest(".wx-block");
     const tafBlock = tafEl?.closest(".wx-block");
     const updatedEl = document.getElementById("wxUpdated");
+    const decodedEl = document.getElementById("wxDecoded");
+    const refreshBtn = document.getElementById("wxRefresh");
     let weatherData = null;
 
-    const STALE_THRESHOLDS = {
-      metar: 60 * 60 * 1000,
-      taf: 60 * 60 * 1000
-    };
-
-    function formatTime(value) {
-      if (!value) return "";
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return "";
-      return date.toLocaleString();
+    function formatTime(v) {
+      if (!v) return "";
+      const d = new Date(v);
+      return Number.isNaN(d.getTime()) ? "" : d.toLocaleString();
     }
 
-    function parseTime(value) {
-      if (!value) return null;
-      if (typeof value === "number" && Number.isFinite(value)) {
-        return value > 1e12 ? value : value * 1000;
-      }
-      if (typeof value === "string") {
-        const parsed = Date.parse(value);
-        if (!Number.isNaN(parsed)) return parsed;
-        const numeric = Number(value);
-        if (Number.isFinite(numeric)) return numeric > 1e12 ? numeric : numeric * 1000;
+    function parseTime(v) {
+      if (!v) return null;
+      if (typeof v === "number" && Number.isFinite(v)) return v > 1e12 ? v : v * 1000;
+      if (typeof v === "string") {
+        const p = Date.parse(v);
+        if (!Number.isNaN(p)) return p;
+        const n = Number(v);
+        if (Number.isFinite(n)) return n > 1e12 ? n : n * 1000;
       }
       return null;
     }
 
     function formatAge(ms) {
       if (!Number.isFinite(ms) || ms < 0) return "--";
-      const totalMinutes = Math.floor(ms / 60000);
-      if (totalMinutes < 1) return "<1m";
-      const hours = Math.floor(totalMinutes / 60);
-      const minutes = totalMinutes % 60;
-      if (hours > 0) return minutes ? `${hours}h ${minutes}m` : `${hours}h`;
-      return `${minutes}m`;
+      const m = Math.floor(ms / 60000);
+      if (m < 1) return "<1m";
+      const h = Math.floor(m / 60);
+      const r = m % 60;
+      if (h > 0) return r ? `${h}h ${r}m` : `${h}h`;
+      return `${r}m`;
     }
 
-    function setStatus(block, status) {
-      if (block) block.dataset.status = status;
-    }
+    function setStatus(block, status) { if (block) block.dataset.status = status; }
 
     function updateBlock(type, block, ageEl, timeMs) {
       if (!block) return;
-      if (Number.isFinite(timeMs)) {
-        block.dataset.timeMs = String(timeMs);
-      } else {
-        delete block.dataset.timeMs;
-      }
+      if (Number.isFinite(timeMs)) block.dataset.timeMs = String(timeMs);
+      else delete block.dataset.timeMs;
       const ageMs = Number.isFinite(timeMs) ? Date.now() - timeMs : null;
       if (ageEl) ageEl.textContent = `Age: ${formatAge(ageMs)}`;
-      const threshold = STALE_THRESHOLDS[type] || STALE_THRESHOLDS.metar;
-      if (!Number.isFinite(ageMs)) {
-        setStatus(block, "stale");
-      } else if (ageMs > threshold) {
-        setStatus(block, "stale");
-      } else {
-        setStatus(block, "ok");
-      }
+      const thr = STALE_THRESHOLDS[type] || STALE_THRESHOLDS.metar;
+      setStatus(block, !Number.isFinite(ageMs) || ageMs > thr ? "stale" : "ok");
     }
 
     function updateAges() {
       const now = Date.now();
-      const blocks = [
-        { type: "metar", block: metarBlock, ageEl: metarAgeEl },
-        { type: "taf", block: tafBlock, ageEl: tafAgeEl }
-      ];
-      blocks.forEach(({ type, block, ageEl }) => {
+      [{ type: "metar", block: metarBlock, ageEl: metarAgeEl },
+       { type: "taf", block: tafBlock, ageEl: tafAgeEl }].forEach(({ type, block, ageEl }) => {
         if (!block) return;
-        const timeMs = Number(block.dataset.timeMs);
-        if (!Number.isFinite(timeMs)) return;
-        const ageMs = now - timeMs;
-        if (ageEl) ageEl.textContent = `Age: ${formatAge(ageMs)}`;
-        if (block.dataset.status === "error") return;
-        const threshold = STALE_THRESHOLDS[type] || STALE_THRESHOLDS.metar;
-        setStatus(block, ageMs > threshold ? "stale" : "ok");
+        const t = Number(block.dataset.timeMs);
+        if (!Number.isFinite(t)) return;
+        const a = now - t;
+        if (ageEl) ageEl.textContent = `Age: ${formatAge(a)}`;
+        if (block.dataset.status !== "error") {
+          setStatus(block, a > (STALE_THRESHOLDS[type] || STALE_THRESHOLDS.metar) ? "stale" : "ok");
+        }
       });
     }
 
+    /* ---------- METAR decoder ---------- */
+    function decodeMetar(raw) {
+      if (!raw) return null;
+      const parts = raw.trim().split(/\s+/);
+      const decoded = {};
+      for (const p of parts) {
+        const windMatch = p.match(/^(\d{3}|VRB)(\d{2,3})(G(\d{2,3}))?KT$/);
+        if (windMatch) {
+          const dir = windMatch[1] === "VRB" ? "Variable" : `${windMatch[1]}°`;
+          decoded.wind = `${dir} at ${parseInt(windMatch[2], 10)} kt${windMatch[4] ? ` gusting ${parseInt(windMatch[4], 10)} kt` : ""}`;
+          if (windMatch[1] === "000" && windMatch[2] === "00") decoded.wind = "Calm";
+          continue;
+        }
+        if (/^\d{1,3}SM$/.test(p)) {
+          decoded.visibility = p.replace("SM", " SM");
+          continue;
+        }
+        const tempMatch = p.match(/^(M?\d{2})\/(M?\d{2})$/);
+        if (tempMatch) {
+          const parse = (s) => { const n = parseInt(s.replace("M", "-"), 10); return n; };
+          const tc = parse(tempMatch[1]);
+          const dc = parse(tempMatch[2]);
+          decoded.temp = `${tc}°C (${Math.round(tc * 9/5 + 32)}°F)`;
+          decoded.dewpoint = `${dc}°C (${Math.round(dc * 9/5 + 32)}°F)`;
+          continue;
+        }
+        if (/^A\d{4}$/.test(p)) {
+          const inhg = parseInt(p.slice(1), 10) / 100;
+          decoded.altimeter = `${inhg.toFixed(2)} inHg`;
+          continue;
+        }
+        const skyMatch = p.match(/^(FEW|SCT|BKN|OVC|CLR|SKC|CAVOK)(\d{3})?$/);
+        if (skyMatch) {
+          const labels = { FEW: "Few", SCT: "Scattered", BKN: "Broken", OVC: "Overcast", CLR: "Clear", SKC: "Clear", CAVOK: "Clear" };
+          const label = labels[skyMatch[1]] || skyMatch[1];
+          if (skyMatch[2]) {
+            const ft = parseInt(skyMatch[2], 10) * 100;
+            if (!decoded.clouds) decoded.clouds = [];
+            decoded.clouds.push(`${label} at ${ft.toLocaleString()} ft`);
+            if (!decoded.ceiling && (skyMatch[1] === "BKN" || skyMatch[1] === "OVC")) {
+              decoded.ceiling = `${ft.toLocaleString()} ft`;
+            }
+          } else {
+            decoded.clouds = [label];
+          }
+          continue;
+        }
+        const wxCodes = { RA: "Rain", SN: "Snow", DZ: "Drizzle", FG: "Fog", BR: "Mist", HZ: "Haze",
+          TS: "Thunderstorm", SH: "Showers", GR: "Hail", FZ: "Freezing", "": "" };
+        const wxMatch = p.match(/^([+-]?)(VC)?(MI|PR|BC|DR|BL|SH|TS|FZ)?(DZ|RA|SN|SG|IC|PL|GR|GS|UP)?(BR|FG|FU|VA|DU|SA|HZ|PY)?$/);
+        if (wxMatch && (wxMatch[3] || wxMatch[4] || wxMatch[5])) {
+          const intensity = wxMatch[1] === "+" ? "Heavy " : wxMatch[1] === "-" ? "Light " : "";
+          const parts2 = [wxMatch[3], wxMatch[4], wxMatch[5]].filter(Boolean).map(c => wxCodes[c] || c);
+          if (parts2.length) decoded.weather = intensity + parts2.join(" ");
+        }
+      }
+      return Object.keys(decoded).length ? decoded : null;
+    }
+
+    function renderDecoded(code) {
+      if (!decodedEl) return;
+      if (!weatherData?.airports?.[code]?.metar) {
+        decodedEl.innerHTML = "";
+        return;
+      }
+      const d = decodeMetar(weatherData.airports[code].metar);
+      if (!d) { decodedEl.innerHTML = ""; return; }
+      const items = [];
+      if (d.wind) items.push(`<span class="decoded-item"><strong>Wind</strong> ${d.wind}</span>`);
+      if (d.visibility) items.push(`<span class="decoded-item"><strong>Vis</strong> ${d.visibility}</span>`);
+      if (d.ceiling) items.push(`<span class="decoded-item"><strong>Ceiling</strong> ${d.ceiling}</span>`);
+      else if (d.clouds) items.push(`<span class="decoded-item"><strong>Sky</strong> ${d.clouds[0]}</span>`);
+      if (d.temp) items.push(`<span class="decoded-item"><strong>Temp</strong> ${d.temp}</span>`);
+      if (d.altimeter) items.push(`<span class="decoded-item"><strong>Altimeter</strong> ${d.altimeter}</span>`);
+      if (d.weather) items.push(`<span class="decoded-item"><strong>Wx</strong> ${d.weather}</span>`);
+      // Flight category
+      const vis = d.visibility ? parseFloat(d.visibility) : 99;
+      const ceil = d.ceiling ? parseInt(d.ceiling.replace(/,/g, ""), 10) : 99999;
+      let cat = "VFR", catClass = "cat-vfr";
+      if (vis < 1 || ceil < 500) { cat = "LIFR"; catClass = "cat-lifr"; }
+      else if (vis < 3 || ceil < 1000) { cat = "IFR"; catClass = "cat-ifr"; }
+      else if (vis <= 5 || ceil <= 3000) { cat = "MVFR"; catClass = "cat-mvfr"; }
+      items.unshift(`<span class="decoded-item flight-cat ${catClass}"><strong>${cat}</strong></span>`);
+      decodedEl.innerHTML = items.join("");
+    }
+
     function renderWeather(code) {
-      const fallback = airportData[code] || { name: code };
-      nameEl.textContent = fallback.name;
+      const info = airportData[code] || { name: code };
+      nameEl.textContent = info.name;
       identEl.textContent = code;
 
-      if (!weatherData || !weatherData.airports || !weatherData.airports[code]) {
+      if (!weatherData?.airports?.[code]) {
         metarEl.textContent = "Unable to load METAR.";
         tafEl.textContent = "Unable to load TAF.";
         setStatus(metarBlock, "error");
         setStatus(tafBlock, "error");
+        renderDecoded(code);
         return;
       }
 
@@ -417,28 +502,131 @@
         : "No TAF available.";
       updateBlock("metar", metarBlock, metarAgeEl, metarTimeMs);
       updateBlock("taf", tafBlock, tafAgeEl, tafTimeMs);
+      renderDecoded(code);
+    }
+
+    /* ---------- Live NOAA fetch ---------- */
+    async function fetchNoaaJson(url) {
+      const r = await fetch(url, { headers: { "User-Agent": "familywebsite-weather/1.0" } });
+      if (r.status === 204) return [];
+      if (!r.ok) throw new Error(`NOAA ${r.status}`);
+      return r.json();
+    }
+
+    async function loadWeatherLive() {
+      const ids = stations.join(",");
+      const [metars, tafs] = await Promise.all([
+        fetchNoaaJson(`${NOAA_BASE}/metar?ids=${ids}&format=json`),
+        fetchNoaaJson(`${NOAA_BASE}/taf?ids=${ids}&format=json`)
+      ]);
+
+      const metarById = Object.fromEntries(
+        metars.map(m => [m.icaoId, { raw: m.rawOb || "", time: m.reportTime || m.obsTime || "" }])
+      );
+      const tafById = Object.fromEntries(
+        tafs.map(t => [t.icaoId, { raw: t.rawTAF || "", time: t.issueTime || "" }])
+      );
+
+      const airports = {};
+      for (const code of stations) {
+        airports[code] = {
+          name: airportData[code].name,
+          metar: metarById[code]?.raw || "",
+          metarTime: metarById[code]?.time || "",
+          taf: tafById[code]?.raw || "",
+          tafTime: tafById[code]?.time || ""
+        };
+      }
+
+      const times = Object.values(airports).flatMap(a => [a.metarTime, a.tafTime]).filter(Boolean);
+      const latest = times.map(t => new Date(t).getTime()).filter(t => !Number.isNaN(t)).sort((a, b) => b - a)[0];
+
+      weatherData = {
+        updated: latest ? new Date(latest).toISOString() : new Date().toISOString(),
+        airports
+      };
+    }
+
+    async function loadWeatherStatic() {
+      const r = await fetch("data/aviation.json", { cache: "no-store" });
+      if (!r.ok) throw new Error("Static weather data missing");
+      weatherData = await r.json();
     }
 
     async function loadWeather() {
+      refreshBtn.classList.add("spinning");
       try {
-        const response = await fetch("data/aviation.json", { cache: "no-store" });
-        if (!response.ok) throw new Error("Weather data missing");
-        weatherData = await response.json();
-        if (weatherData.updated) {
-          updatedEl.textContent = `Last updated: ${formatTime(weatherData.updated)} • Source: NOAA Aviation Weather Center`;
-        }
-        renderWeather(select.value);
-      } catch (err) {
-        updatedEl.textContent = "Last updated: unavailable • Source: NOAA Aviation Weather Center";
-        setStatus(metarBlock, "error");
-        setStatus(tafBlock, "error");
-        renderWeather(select.value);
+        await loadWeatherLive();
+      } catch {
+        try { await loadWeatherStatic(); } catch { /* both failed */ }
       }
+      refreshBtn.classList.remove("spinning");
+
+      if (weatherData?.updated) {
+        const btn = refreshBtn.outerHTML;
+        updatedEl.innerHTML = `Last updated: ${formatTime(weatherData.updated)} • Source: NOAA Aviation Weather Center ${btn}`;
+        // re-bind after innerHTML replace
+        document.getElementById("wxRefresh").addEventListener("click", loadWeather);
+      }
+      renderWeather(select.value);
+    }
+
+    /* ---------- Sunrise / Sunset ---------- */
+    async function loadSunData() {
+      const grid = document.getElementById("sunGrid");
+      if (!grid) return;
+
+      const cards = await Promise.all(stations.map(async (code) => {
+        const { name, lat, lng } = airportData[code];
+        try {
+          const r = await fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lng}&formatted=0`);
+          const data = await r.json();
+          if (data.status !== "OK") throw new Error("API error");
+          const res = data.results;
+          const fmt = (iso) => new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+          return `<article class="sun-card">
+            <h4>${name} <span class="wx-ident">${code}</span></h4>
+            <div class="sun-times">
+              <div><span class="sun-label">Dawn</span><span class="sun-value">${fmt(res.civil_twilight_begin)}</span></div>
+              <div><span class="sun-label">Sunrise</span><span class="sun-value">${fmt(res.sunrise)}</span></div>
+              <div><span class="sun-label">Sunset</span><span class="sun-value">${fmt(res.sunset)}</span></div>
+              <div><span class="sun-label">Dusk</span><span class="sun-value">${fmt(res.civil_twilight_end)}</span></div>
+              <div><span class="sun-label">Day length</span><span class="sun-value">${Math.floor(res.day_length/3600)}h ${Math.floor((res.day_length%3600)/60)}m</span></div>
+            </div>
+          </article>`;
+        } catch {
+          return `<article class="sun-card"><h4>${name} <span class="wx-ident">${code}</span></h4><p class="wx-text">Unable to load sun data.</p></article>`;
+        }
+      }));
+      grid.innerHTML = cards.join("");
+    }
+
+    /* ---------- Stale events marker ---------- */
+    function markPastEvents() {
+      document.querySelectorAll(".event-card").forEach(card => {
+        const metaEl = card.querySelector(".card-meta");
+        if (!metaEl) return;
+        const text = metaEl.textContent;
+        const match = text.match(/(\w+),\s+(\w+)\s+(\d+),\s+(\d{4})/);
+        if (!match) return;
+        const eventDate = new Date(`${match[2]} ${match[3]}, ${match[4]}`);
+        if (eventDate < new Date()) {
+          card.classList.add("past-event");
+          const badge = document.createElement("span");
+          badge.className = "past-badge";
+          badge.textContent = "Past Event";
+          metaEl.prepend(badge);
+        }
+      });
     }
 
     select.addEventListener("change", () => renderWeather(select.value));
+    refreshBtn.addEventListener("click", loadWeather);
     loadWeather();
+    loadSunData();
+    markPastEvents();
     setInterval(updateAges, 15000);
+    setInterval(loadWeather, REFRESH_INTERVAL);
   </script>
 </body>
 </html>
