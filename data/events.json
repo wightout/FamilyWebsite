@@ -1,0 +1,70 @@
+{
+  "events": [
+    {
+      "id": "1",
+      "title": "Hangar Talk & Flight: Curtiss P-40 Warhawk",
+      "date": "Saturday, Mar 22, 2026",
+      "time": "10:30 AM",
+      "venue": "Planes of Fame Air Museum",
+      "city": "Chino, CA",
+      "description": "Monthly hangar talk featuring a live P-40 Warhawk demonstration flight with narrated ground presentation by museum volunteers.",
+      "url": "https://planesoffame.org/events-calendar2/",
+      "tags": ["Fly-in", "Museum"]
+    },
+    {
+      "id": "2",
+      "title": "Spring Family Fly-In at Brackett Field",
+      "date": "Sunday, Mar 29, 2026",
+      "time": "9:00 AM",
+      "venue": "Brackett Field Airport (KPOC)",
+      "city": "La Verne, CA",
+      "description": "Open ramp day for pilots and families. Aircraft displays, free Young Eagles flights for kids, and food trucks on the flight line.",
+      "url": "",
+      "tags": ["Fly-in", "Family"]
+    },
+    {
+      "id": "3",
+      "title": "March Field After Dark: Cold War Night",
+      "date": "Friday, Apr 3, 2026",
+      "time": "6:00 PM",
+      "venue": "March Field Air Museum",
+      "city": "Riverside, CA",
+      "description": "Special evening tour of Cold War aircraft under the stars. Docents stationed at B-52, SR-71, and U-2 exhibits. Tickets required.",
+      "url": "https://www.marchfield.org/events/",
+      "tags": ["Museum", "Exhibit"]
+    },
+    {
+      "id": "4",
+      "title": "Flabob Breakfast Fly-In",
+      "date": "Saturday, Apr 11, 2026",
+      "time": "7:30 AM",
+      "venue": "Flabob Airport (KRIR)",
+      "city": "Riverside, CA",
+      "description": "Classic Saturday morning breakfast fly-in at historic Flabob Airport. Pancake breakfast, vintage aircraft, and a relaxed vintage airfield atmosphere.",
+      "url": "",
+      "tags": ["Fly-in", "Family"]
+    },
+    {
+      "id": "5",
+      "title": "Planes of Fame Air Show 2026",
+      "date": "Saturday, May 2, 2026",
+      "time": "9:00 AM",
+      "venue": "Chino Airport (KCNO)",
+      "city": "Chino, CA",
+      "description": "Annual two-day airshow featuring WWII warbird flights, formation flying, and a rare aircraft static display. One of the top warbird events in the country.",
+      "url": "https://planesoffame.org/airshow/",
+      "tags": ["Air Show", "Fly-in"]
+    },
+    {
+      "id": "6",
+      "title": "Cable Airport Community Day",
+      "date": "Sunday, Apr 19, 2026",
+      "time": "10:00 AM",
+      "venue": "Cable Airport (KCCB)",
+      "city": "Upland, CA",
+      "description": "Free community open house at Cable Airport with aircraft static displays, flight school demos, and introductory discovery flights available for booking.",
+      "url": "",
+      "tags": ["Family", "Fly-in"]
+    }
+  ]
+}
