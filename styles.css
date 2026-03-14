@@ -1005,3 +1005,83 @@ tbody tr:nth-child(even){
   border:1px solid #f1aeb5;
   padding:0.45rem 0.8rem;
 }
+
+/* ===== Print styles ===== */
+@media print{
+  /* Hide everything except the logbook section */
+  .site-header,
+  .site-nav,
+  .orbital-grid,
+  .section.weather,
+  .sun-section,
+  .winds-section,
+  .section.airports,
+  .section#events,
+  .hero,
+  .section#gallery,
+  .footer-actions,
+  .logbook-panel,
+  .site-footer{
+    display:none !important;
+  }
+
+  /* Clean page background */
+  body{
+    background:none;
+    color:#000;
+    font-size:11pt;
+  }
+
+  /* Show main logbook section cleanly */
+  #logbook{
+    display:block !important;
+    padding:0;
+    margin:0;
+  }
+
+  /* Remove shadows and decorative borders from entry cards */
+  .logbook-entry{
+    background:#fff;
+    box-shadow:none;
+    border:1px solid #ccc;
+    border-radius:0;
+    page-break-inside:avoid;
+    margin-bottom:0.8rem;
+  }
+
+  .logbook-entry:hover{
+    box-shadow:none;
+  }
+
+  /* Ensure text is black for printing */
+  .logbook-entry-name,
+  .logbook-entry-meta,
+  .logbook-entry-memory,
+  .logbook-entry-badge{
+    color:#000;
+    background:none;
+  }
+
+  /* Remove link underlines */
+  a{
+    text-decoration:none;
+    border-bottom:none;
+    color:#000;
+  }
+
+  /* Page heading */
+  #logbook h3{
+    font-size:18pt;
+    margin-bottom:0.5rem;
+  }
+
+  #logbook > div > p{
+    color:#333;
+  }
+
+  /* Remove main padding/gap for print */
+  main{
+    padding:0;
+    gap:0;
+  }
+}
