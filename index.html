@@ -322,7 +322,7 @@
   </main>
 
   <!-- Lightbox overlay -->
-  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer" hidden>
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
     <div class="lightbox-backdrop" id="lightboxBackdrop"></div>
     <button class="lightbox-close" id="lightboxClose" aria-label="Close photo viewer">&times;</button>
     <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous photo">&#8249;</button>
@@ -1287,19 +1287,13 @@
         if (tiles.length === 0) return;
         currentIndex = ((index % tiles.length) + tiles.length) % tiles.length;
         showSlide(currentIndex);
-        lightbox.hidden = false;
-        // Allow paint before adding class so fade-in triggers
-        requestAnimationFrame(() => lightbox.classList.add("is-open"));
+        lightbox.classList.add("is-open");
         document.body.classList.add("lightbox-active");
         closeBtn.focus();
       }
 
       function closeLightbox() {
         lightbox.classList.remove("is-open");
-        lightbox.addEventListener("transitionend", function handler() {
-          lightbox.hidden = true;
-          lightbox.removeEventListener("transitionend", handler);
-        }, { once: true });
         document.body.classList.remove("lightbox-active");
       }
 
@@ -1353,7 +1347,7 @@
 
       // Keyboard navigation
       document.addEventListener("keydown", (e) => {
-        if (lightbox.hidden) return;
+        if (!lightbox.classList.contains("is-open")) return;
         if (e.key === "Escape") closeLightbox();
         if (e.key === "ArrowLeft") prev();
         if (e.key === "ArrowRight") next();
