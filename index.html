@@ -138,7 +138,7 @@
         <div class="hero-meta">
           <div>
             <p class="meta-label">Nearest Airfields</p>
-            <p class="meta-value">Z99 • KSQL • KOAK</p>
+            <p class="meta-value">KPOC • KCCB • KRAL</p>
           </div>
           <div>
             <p class="meta-label">This Month</p>
@@ -157,26 +157,8 @@
       <div class="hero-panel">
         <div class="panel-card">
           <p class="panel-title">Next On The Radar</p>
-          <div class="event">
-            <div>
-              <p class="event-title">Golden Gate Aviation Night</p>
-              <p class="event-meta">Friday • 6:30 PM • San Carlos Airport</p>
-            </div>
-            <span class="event-tag">Fly-in</span>
-          </div>
-          <div class="event">
-            <div>
-              <p class="event-title">Museum After Dark</p>
-              <p class="event-meta">Saturday • 7:00 PM • Hiller Aviation</p>
-            </div>
-            <span class="event-tag">Exhibit</span>
-          </div>
-          <div class="event">
-            <div>
-              <p class="event-title">Runway Picnic</p>
-              <p class="event-meta">Sunday • 12:00 PM • Oakland North Field</p>
-            </div>
-            <span class="event-tag">Family</span>
+          <div id="heroEventsList">
+            <p class="event-meta">Loading events…</p>
           </div>
         </div>
         <div class="panel-stamp">
@@ -230,24 +212,13 @@
 
     <section id="events" class="section">
       <div class="section-heading">
-        <h3>Upcoming Aviation Events (Next 2 Weeks)</h3>
+        <h3>Upcoming Aviation Events</h3>
         <p>Curated within ~50 miles of 91767. Links go to official event pages.</p>
       </div>
-      <div class="card-grid">
-        <article class="event-card">
-          <h4>Hangar Talk &amp; Flight: Republic P-47G Thunderbolt</h4>
-          <p class="card-meta">Saturday, Feb 7, 2026 • 10:30 AM • Planes of Fame Air Museum (Chino)</p>
-          <p class="card-body">Hangar talk plus a live aircraft flight and presentation.</p>
-          <a class="text-cta" href="https://planesoffame.org/events-calendar2/Hangar-Talk-1" target="_blank" rel="noopener">View Event</a>
-        </article>
-        <article class="event-card">
-          <h4>A Heart for Riverside (Fundraiser at March Field Air Museum)</h4>
-          <p class="card-meta">Saturday, Feb 14, 2026 • 5:30 PM • March Field Air Museum (Riverside)</p>
-          <p class="card-body">Fundraiser evening with dinner and dancing supporting Riverside youth projects.</p>
-          <a class="text-cta" href="https://www.eventbrite.com/e/a-heart-for-riverside-tickets-1971882351194" target="_blank" rel="noopener">View Event</a>
-        </article>
+      <div class="card-grid" id="eventsGrid">
+        <p class="wx-text">Loading events…</p>
       </div>
-      <p class="fineprint">If you want more listings, I can expand the radius or include museum calendars beyond this two‑week window.</p>
+      <p class="fineprint" id="eventsFineprint">Events near Pomona, CA (91767). Sourced from local airports and museums.</p>
     </section>
 
     <section id="logbook" class="section split">
@@ -641,6 +612,140 @@
       });
     }
 
+    /* ---------- Events JSON loader ---------- */
+    function isPastEvent(event) {
+      const match = event.date.match(/(\w+),\s+(\w+)\s+(\d+),\s+(\d{4})/);
+      if (!match) return false;
+      const eventDate = new Date(`${match[2]} ${match[3]}, ${match[4]}`);
+      return eventDate < new Date();
+    }
+
+    function buildEventCard(event) {
+      const article = document.createElement("article");
+      article.className = "event-card";
+
+      const h4 = document.createElement("h4");
+      h4.textContent = event.title;
+      article.appendChild(h4);
+
+      const meta = document.createElement("p");
+      meta.className = "card-meta";
+      meta.textContent = `${event.date} \u2022 ${event.time} \u2022 ${event.venue} (${event.city})`;
+      article.appendChild(meta);
+
+      const body = document.createElement("p");
+      body.className = "card-body";
+      body.textContent = event.description;
+      article.appendChild(body);
+
+      if (event.url) {
+        const link = document.createElement("a");
+        link.className = "text-cta";
+        link.href = event.url;
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.textContent = "View Event";
+        article.appendChild(link);
+      }
+
+      if (isPastEvent(event)) {
+        article.classList.add("past-event");
+        const badge = document.createElement("span");
+        badge.className = "past-badge";
+        badge.textContent = "Past Event";
+        meta.prepend(badge);
+      }
+
+      return article;
+    }
+
+    function buildHeroEventItem(event) {
+      const div = document.createElement("div");
+      div.className = "event";
+
+      const inner = document.createElement("div");
+
+      const titleEl = document.createElement("p");
+      titleEl.className = "event-title";
+      titleEl.textContent = event.title;
+
+      const metaEl = document.createElement("p");
+      metaEl.className = "event-meta";
+      // Parse day-of-week from date string, e.g. "Saturday, Mar 22, 2026"
+      const dayMatch = event.date.match(/^(\w+),/);
+      const dayOfWeek = dayMatch ? dayMatch[1] : event.date;
+      metaEl.textContent = `${dayOfWeek} \u2022 ${event.time} \u2022 ${event.venue}`;
+
+      inner.appendChild(titleEl);
+      inner.appendChild(metaEl);
+      div.appendChild(inner);
+
+      if (event.tags && event.tags.length > 0) {
+        const tag = document.createElement("span");
+        tag.className = "event-tag";
+        tag.textContent = event.tags[0];
+        div.appendChild(tag);
+      }
+
+      return div;
+    }
+
+    async function loadEvents() {
+      const eventsGrid = document.getElementById("eventsGrid");
+      const heroList = document.getElementById("heroEventsList");
+
+      let allEvents = [];
+      try {
+        const r = await fetch("data/events.json", { cache: "no-store" });
+        if (!r.ok) throw new Error("Events data missing");
+        const data = await r.json();
+        allEvents = Array.isArray(data.events) ? data.events : [];
+      } catch {
+        if (eventsGrid) {
+          while (eventsGrid.firstChild) eventsGrid.removeChild(eventsGrid.firstChild);
+          const msg = document.createElement("p");
+          msg.className = "wx-text";
+          msg.textContent = "Unable to load events. Please check back later.";
+          eventsGrid.appendChild(msg);
+        }
+        if (heroList) {
+          while (heroList.firstChild) heroList.removeChild(heroList.firstChild);
+          const msg = document.createElement("p");
+          msg.className = "event-meta";
+          msg.textContent = "No events available.";
+          heroList.appendChild(msg);
+        }
+        return;
+      }
+
+      // Render main events grid
+      if (eventsGrid) {
+        while (eventsGrid.firstChild) eventsGrid.removeChild(eventsGrid.firstChild);
+        if (allEvents.length === 0) {
+          const msg = document.createElement("p");
+          msg.className = "wx-text";
+          msg.textContent = "No upcoming events found.";
+          eventsGrid.appendChild(msg);
+        } else {
+          allEvents.forEach(event => eventsGrid.appendChild(buildEventCard(event)));
+        }
+      }
+
+      // Render hero panel: first 3 upcoming (non-past) events
+      if (heroList) {
+        while (heroList.firstChild) heroList.removeChild(heroList.firstChild);
+        const upcoming = allEvents.filter(e => !isPastEvent(e)).slice(0, 3);
+        if (upcoming.length === 0) {
+          const msg = document.createElement("p");
+          msg.className = "event-meta";
+          msg.textContent = "No upcoming events right now.";
+          heroList.appendChild(msg);
+        } else {
+          upcoming.forEach(event => heroList.appendChild(buildHeroEventItem(event)));
+        }
+      }
+    }
+
     /* ---------- Winds Aloft (FB Winds) ---------- */
     const WINDS_ALTITUDES = ["3000", "6000", "9000", "12000", "18000", "24000"];
     const windsStationSel = document.getElementById("windsStation");
@@ -828,7 +933,7 @@
     loadWeather();
     loadSunData();
     loadWindsAloft();
-    markPastEvents();
+    loadEvents();
     setInterval(updateAges, 15000);
     setInterval(loadWeather, REFRESH_INTERVAL);
 
