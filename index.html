@@ -25,13 +25,12 @@
       <a href="#logbook">Logbook</a>
       <a href="#gallery">Gallery</a>
     </nav>
-    <form class="newsletter-form" action="mailto:velvetrunwayfamily@gmail.com" method="post" enctype="text/plain">
+    <form class="newsletter-form" id="newsletterForm" novalidate>
       <label class="sr-only" for="newsletterEmail">Email address</label>
       <input id="newsletterEmail" name="email" type="email" placeholder="Email for the quarterly aviation roundup" required />
       <span class="newsletter-note">Quarterly newsletter with our family aviation highlights.</span>
-      <input type="hidden" name="subject" value="Velvet Runway newsletter signup" />
-      <input type="hidden" name="body" value="Please add me to the quarterly family aviation newsletter." />
-      <button class="primary-cta" type="submit">Join Our Flight List</button>
+      <button class="primary-cta" type="submit" id="newsletterBtn">Join Our Flight List</button>
+      <span class="newsletter-success" id="newsletterSuccess" aria-live="polite"></span>
     </form>
   </header>
 
@@ -289,6 +288,18 @@
     </section>
 
   </main>
+
+  <!-- Lightbox overlay -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer" hidden>
+    <div class="lightbox-backdrop" id="lightboxBackdrop"></div>
+    <button class="lightbox-close" id="lightboxClose" aria-label="Close photo viewer">&times;</button>
+    <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous photo">&#8249;</button>
+    <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next photo">&#8250;</button>
+    <figure class="lightbox-figure">
+      <img class="lightbox-img" id="lightboxImg" src="" alt="" />
+      <figcaption class="lightbox-caption" id="lightboxCaption"></figcaption>
+    </figure>
+  </div>
 
   <footer class="site-footer">
     <div>
@@ -1174,6 +1185,151 @@
         if (eventsSection) eventsSection.scrollIntoView({ behavior: "smooth" });
       });
     }
+
+    /* ========== NEWSLETTER FORM ========== */
+    const NEWSLETTER_KEY = "velvetrunway-newsletter-signups";
+    const newsletterForm = document.getElementById("newsletterForm");
+    const newsletterBtn = document.getElementById("newsletterBtn");
+    const newsletterEmailEl = document.getElementById("newsletterEmail");
+    const newsletterSuccess = document.getElementById("newsletterSuccess");
+
+    function getNewsletterSignups() {
+      try {
+        const raw = localStorage.getItem(NEWSLETTER_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch { return []; }
+    }
+
+    function setNewsletterSignedUp() {
+      if (!newsletterBtn || !newsletterEmailEl) return;
+      newsletterBtn.textContent = "You're on the list!";
+      newsletterBtn.disabled = true;
+      newsletterEmailEl.disabled = true;
+      if (newsletterSuccess) {
+        newsletterSuccess.textContent = "Thanks! We'll add you to our flight list.";
+      }
+    }
+
+    // On page load: check if already signed up
+    (function initNewsletter() {
+      const signups = getNewsletterSignups();
+      if (signups.length > 0) {
+        setNewsletterSignedUp();
+      }
+    })();
+
+    if (newsletterForm) {
+      newsletterForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const email = newsletterEmailEl ? newsletterEmailEl.value.trim() : "";
+        if (!email) return;
+
+        const signups = getNewsletterSignups();
+        if (!signups.includes(email)) {
+          signups.push(email);
+          try { localStorage.setItem(NEWSLETTER_KEY, JSON.stringify(signups)); } catch { /* quota */ }
+        }
+        setNewsletterSignedUp();
+      });
+    }
+
+    /* ========== GALLERY LIGHTBOX ========== */
+    (function initLightbox() {
+      const lightbox = document.getElementById("lightbox");
+      const backdrop = document.getElementById("lightboxBackdrop");
+      const closeBtn = document.getElementById("lightboxClose");
+      const prevBtn = document.getElementById("lightboxPrev");
+      const nextBtn = document.getElementById("lightboxNext");
+      const imgEl = document.getElementById("lightboxImg");
+      const captionEl = document.getElementById("lightboxCaption");
+
+      if (!lightbox) return;
+
+      // Collect all gallery tiles
+      let tiles = [];
+      let currentIndex = 0;
+
+      function getTiles() {
+        tiles = Array.from(document.querySelectorAll(".gallery-tile"));
+      }
+
+      function openLightbox(index) {
+        getTiles();
+        if (tiles.length === 0) return;
+        currentIndex = ((index % tiles.length) + tiles.length) % tiles.length;
+        showSlide(currentIndex);
+        lightbox.hidden = false;
+        // Allow paint before adding class so fade-in triggers
+        requestAnimationFrame(() => lightbox.classList.add("is-open"));
+        document.body.classList.add("lightbox-active");
+        closeBtn.focus();
+      }
+
+      function closeLightbox() {
+        lightbox.classList.remove("is-open");
+        lightbox.addEventListener("transitionend", function handler() {
+          lightbox.hidden = true;
+          lightbox.removeEventListener("transitionend", handler);
+        }, { once: true });
+        document.body.classList.remove("lightbox-active");
+      }
+
+      function showSlide(index) {
+        if (tiles.length === 0) return;
+        const tile = tiles[index];
+        const tileImg = tile.querySelector("img");
+        const tileCaption = tile.querySelector("figcaption");
+        if (imgEl) {
+          imgEl.src = tileImg ? tileImg.src : "";
+          imgEl.alt = tileImg ? (tileImg.alt || "") : "";
+        }
+        if (captionEl) {
+          captionEl.textContent = tileCaption ? tileCaption.textContent : "";
+        }
+        // Show/hide nav arrows based on count
+        if (prevBtn) prevBtn.style.display = tiles.length > 1 ? "" : "none";
+        if (nextBtn) nextBtn.style.display = tiles.length > 1 ? "" : "none";
+      }
+
+      function prev() {
+        getTiles();
+        currentIndex = (currentIndex - 1 + tiles.length) % tiles.length;
+        showSlide(currentIndex);
+      }
+
+      function next() {
+        getTiles();
+        currentIndex = (currentIndex + 1) % tiles.length;
+        showSlide(currentIndex);
+      }
+
+      // Attach click handlers to gallery tiles (delegate from .gallery-grid for future tiles)
+      document.addEventListener("click", (e) => {
+        const tile = e.target.closest(".gallery-tile");
+        if (!tile) return;
+        getTiles();
+        const index = tiles.indexOf(tile);
+        if (index !== -1) openLightbox(index);
+      });
+
+      // Add cursor pointer to gallery tiles
+      document.querySelectorAll(".gallery-tile").forEach(t => {
+        t.style.cursor = "pointer";
+      });
+
+      if (closeBtn) closeBtn.addEventListener("click", closeLightbox);
+      if (backdrop) backdrop.addEventListener("click", closeLightbox);
+      if (prevBtn) prevBtn.addEventListener("click", (e) => { e.stopPropagation(); prev(); });
+      if (nextBtn) nextBtn.addEventListener("click", (e) => { e.stopPropagation(); next(); });
+
+      // Keyboard navigation
+      document.addEventListener("keydown", (e) => {
+        if (lightbox.hidden) return;
+        if (e.key === "Escape") closeLightbox();
+        if (e.key === "ArrowLeft") prev();
+        if (e.key === "ArrowRight") next();
+      });
+    })();
   </script>
 </body>
 </html>

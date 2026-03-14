@@ -123,6 +123,150 @@ a{
   color:var(--ink-soft);
 }
 
+.newsletter-success{
+  font-size:0.85rem;
+  color:var(--teal);
+  font-weight:600;
+}
+
+.newsletter-form input[type="email"]:disabled{
+  opacity:0.5;
+  cursor:default;
+}
+
+.primary-cta:disabled{
+  opacity:0.65;
+  cursor:default;
+  box-shadow:none;
+}
+
+/* ========== LIGHTBOX ========== */
+.lightbox{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  transition:opacity 0.3s ease;
+}
+
+.lightbox.is-open{
+  opacity:1;
+}
+
+.lightbox-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(42,35,29,0.88);
+}
+
+.lightbox-close{
+  position:absolute;
+  top:1.2rem;
+  right:1.5rem;
+  z-index:1;
+  background:rgba(255,247,235,0.12);
+  border:1px solid rgba(255,247,235,0.25);
+  color:#fff7eb;
+  font-size:2rem;
+  line-height:1;
+  width:2.6rem;
+  height:2.6rem;
+  border-radius:50%;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:inherit;
+  transition:background 0.2s;
+}
+
+.lightbox-close:hover{
+  background:rgba(255,247,235,0.25);
+}
+
+.lightbox-nav{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:1;
+  background:rgba(255,247,235,0.12);
+  border:1px solid rgba(255,247,235,0.25);
+  color:#fff7eb;
+  font-size:2.8rem;
+  line-height:1;
+  width:3rem;
+  height:3rem;
+  border-radius:50%;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:inherit;
+  transition:background 0.2s;
+}
+
+.lightbox-nav:hover{
+  background:rgba(255,247,235,0.25);
+}
+
+.lightbox-prev{ left:1.2rem; }
+.lightbox-next{ right:1.2rem; }
+
+.lightbox-figure{
+  position:relative;
+  z-index:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:1rem;
+  max-width:min(90vw,1100px);
+  max-height:90vh;
+  margin:0;
+}
+
+.lightbox-img{
+  display:block;
+  max-width:100%;
+  max-height:80vh;
+  border-radius:12px;
+  box-shadow:0 30px 80px rgba(42,35,29,0.5);
+  object-fit:contain;
+}
+
+.lightbox-caption{
+  color:#fff7eb;
+  font-size:0.95rem;
+  font-weight:600;
+  text-align:center;
+  letter-spacing:0.04em;
+}
+
+body.lightbox-active{
+  overflow:hidden;
+}
+
+/* Hover hint on gallery tiles */
+.gallery-tile::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:rgba(42,77,79,0);
+  transition:background 0.25s;
+  z-index:0;
+  border-radius:20px;
+}
+
+.gallery-tile:hover::after{
+  background:rgba(42,77,79,0.18);
+}
+
+.gallery-tile:hover figcaption{
+  color:var(--teal);
+}
+
 .sr-only{
   position:absolute;
   width:1px;
