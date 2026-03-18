@@ -357,6 +357,7 @@
     };
     const stations = Object.keys(airportData);
     const NOAA_BASE = "https://aviationweather.gov/api/data";
+    const CORS_PROXY = "https://corsproxy.io/?url=";
     const STALE_THRESHOLDS = { metar: 60 * 60 * 1000, taf: 60 * 60 * 1000 };
     const REFRESH_INTERVAL = 5 * 60 * 1000;
 
@@ -547,10 +548,22 @@
     }
 
     /* ---------- Live NOAA fetch ---------- */
+    function proxyUrl(url) { return `${CORS_PROXY}${encodeURIComponent(url)}`; }
+
+    function fetchWithTimeout(url, opts, ms) {
+      ms = ms || 8000;
+      const ctrl = new AbortController();
+      const id = setTimeout(() => ctrl.abort(), ms);
+      return fetch(url, Object.assign({}, opts, { signal: ctrl.signal }))
+        .finally(() => clearTimeout(id));
+    }
+
     async function fetchNoaaJson(url) {
-      const r = await fetch(url, { headers: { "User-Agent": "familywebsite-weather/1.0" } });
+      const r = await fetchWithTimeout(proxyUrl(url));
       if (r.status === 204) return [];
       if (!r.ok) throw new Error(`NOAA ${r.status}`);
+      const ct = r.headers.get("content-type") || "";
+      if (!ct.includes("json")) throw new Error(`Proxy returned non-JSON: ${ct}`);
       return r.json();
     }
 
@@ -596,19 +609,28 @@
 
     async function loadWeather() {
       refreshBtn.classList.add("spinning");
+      let source = "live";
       try {
         await loadWeatherLive();
-      } catch {
-        try { await loadWeatherStatic(); } catch { /* both failed */ }
+      } catch (err) {
+        console.warn("Live weather fetch failed, falling back to cache:", err);
+        source = "cache";
+        try { await loadWeatherStatic(); } catch (err2) {
+          console.error("Static weather cache also failed:", err2);
+          source = "error";
+        }
       }
       refreshBtn.classList.remove("spinning");
 
-      if (weatherData?.updated) {
-        const btn = refreshBtn.outerHTML;
-        updatedEl.innerHTML = `Last updated: ${escHtml(formatTime(weatherData.updated))} • Source: NOAA Aviation Weather Center ${btn}`;
-        // re-bind after innerHTML replace
-        document.getElementById("wxRefresh").addEventListener("click", loadWeather);
+      const btn = refreshBtn.outerHTML;
+      if (source === "error" || !weatherData?.updated) {
+        updatedEl.innerHTML = `Last updated: unavailable <span class="wx-source-note">(all sources failed)</span> \u2022 Source: NOAA Aviation Weather Center ${btn}`;
+      } else {
+        const staleNote = source === "cache" ? ' <span class="wx-source-note">(cached \u2014 live fetch failed)</span>' : "";
+        updatedEl.innerHTML = `Last updated: ${escHtml(formatTime(weatherData.updated))}${staleNote} \u2022 Source: NOAA Aviation Weather Center ${btn}`;
       }
+      // re-bind after innerHTML replace
+      document.getElementById("wxRefresh").addEventListener("click", loadWeather);
       renderWeather(select.value);
     }
 
@@ -862,7 +884,7 @@
     // Also try the JSON endpoint as primary, text as fallback
     async function loadWindsAloftJson(station, fcst) {
       const url = `${NOAA_BASE}/windtemp?region=sfo&level=low&fcst=${fcst}&format=json`;
-      const r = await fetch(url);
+      const r = await fetchWithTimeout(proxyUrl(url));
       if (!r.ok) throw new Error(`NOAA windtemp ${r.status}`);
       const data = await r.json();
       // JSON returns array of objects with station, altitude, dir, speed, temp
@@ -874,7 +896,7 @@
 
     async function loadWindsAloftText(station, fcst) {
       const url = `${NOAA_BASE}/windtemp?region=sfo&level=low&fcst=${fcst}`;
-      const r = await fetch(url);
+      const r = await fetchWithTimeout(proxyUrl(url));
       if (!r.ok) throw new Error(`NOAA windtemp text ${r.status}`);
       const text = await r.text();
       return parseFBWinds(text, station);
@@ -925,11 +947,13 @@
             };
           });
         }
-      } catch {
+      } catch (jsonErr) {
+        console.warn("Winds JSON API failed:", jsonErr);
         try {
           winds = await loadWindsAloftText(station, fcst);
-        } catch {
-          // Both live APIs failed (likely CORS), use static cache
+        } catch (textErr) {
+          console.warn("Winds text API failed:", textErr);
+          // Both live APIs failed, use static cache
           try {
             const staticData = await loadWindsAloftStatic(station, fcst);
             winds = staticData.winds.map(w => {
@@ -941,7 +965,7 @@
               };
             });
             if (staticData.updated) validLine = `Cached: ${formatTime(staticData.updated)}`;
-          } catch { /* all sources failed */ }
+          } catch (staticErr) { console.error("All winds sources failed:", staticErr); }
         }
       }
 
