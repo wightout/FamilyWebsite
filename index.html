@@ -357,7 +357,10 @@
     };
     const stations = Object.keys(airportData);
     const NOAA_BASE = "https://aviationweather.gov/api/data";
-    const CORS_PROXY = "https://corsproxy.io/?url=";
+    const CORS_PROXIES = [
+      function(u) { return "https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(u); },
+      function(u) { return "https://corsproxy.io/?url=" + encodeURIComponent(u); }
+    ];
     const STALE_THRESHOLDS = { metar: 60 * 60 * 1000, taf: 60 * 60 * 1000 };
     const REFRESH_INTERVAL = 5 * 60 * 1000;
 
@@ -548,22 +551,29 @@
     }
 
     /* ---------- Live NOAA fetch ---------- */
-    function proxyUrl(url) { return `${CORS_PROXY}${encodeURIComponent(url)}`; }
-
-    function fetchWithTimeout(url, opts, ms) {
+    function fetchWithTimeout(url, ms) {
       ms = ms || 8000;
-      const ctrl = new AbortController();
-      const id = setTimeout(() => ctrl.abort(), ms);
-      return fetch(url, Object.assign({}, opts, { signal: ctrl.signal }))
-        .finally(() => clearTimeout(id));
+      var ctrl = new AbortController();
+      var id = setTimeout(function() { ctrl.abort(); }, ms);
+      return fetch(url, { signal: ctrl.signal }).finally(function() { clearTimeout(id); });
+    }
+
+    async function fetchViaProxy(url) {
+      for (var i = 0; i < CORS_PROXIES.length; i++) {
+        var proxied = CORS_PROXIES[i](url);
+        try {
+          var r = await fetchWithTimeout(proxied);
+          if (r.ok) return r;
+        } catch (err) {
+          console.warn("Proxy " + i + " failed for " + url + ":", err.message);
+        }
+      }
+      throw new Error("All CORS proxies failed for " + url);
     }
 
     async function fetchNoaaJson(url) {
-      const r = await fetchWithTimeout(proxyUrl(url));
+      var r = await fetchViaProxy(url);
       if (r.status === 204) return [];
-      if (!r.ok) throw new Error(`NOAA ${r.status}`);
-      const ct = r.headers.get("content-type") || "";
-      if (!ct.includes("json")) throw new Error(`Proxy returned non-JSON: ${ct}`);
       return r.json();
     }
 
@@ -607,30 +617,40 @@
       weatherData = await r.json();
     }
 
-    async function loadWeather() {
+    async function loadWeather(tryLive) {
       refreshBtn.classList.add("spinning");
-      let source = "live";
-      try {
-        await loadWeatherLive();
-      } catch (err) {
-        console.warn("Live weather fetch failed, falling back to cache:", err);
-        source = "cache";
-        try { await loadWeatherStatic(); } catch (err2) {
+      var source = "cache";
+
+      if (tryLive) {
+        try {
+          await loadWeatherLive();
+          source = "live";
+        } catch (err) {
+          console.warn("Live weather fetch failed:", err);
+        }
+      }
+
+      if (source !== "live") {
+        try {
+          await loadWeatherStatic();
+          source = "cache";
+        } catch (err2) {
           console.error("Static weather cache also failed:", err2);
           source = "error";
         }
       }
       refreshBtn.classList.remove("spinning");
 
-      const btn = refreshBtn.outerHTML;
+      var btn = refreshBtn.outerHTML;
       if (source === "error" || !weatherData?.updated) {
-        updatedEl.innerHTML = `Last updated: unavailable <span class="wx-source-note">(all sources failed)</span> \u2022 Source: NOAA Aviation Weather Center ${btn}`;
+        updatedEl.innerHTML = 'Last updated: unavailable <span class="wx-source-note">(all sources failed)</span> \u2022 Source: NOAA Aviation Weather Center ' + btn;
+      } else if (source === "live") {
+        updatedEl.innerHTML = 'Last updated: ' + escHtml(formatTime(weatherData.updated)) + ' <span class="wx-source-note" style="color:var(--teal)">(live)</span> \u2022 Source: NOAA Aviation Weather Center ' + btn;
       } else {
-        const staleNote = source === "cache" ? ' <span class="wx-source-note">(cached \u2014 live fetch failed)</span>' : "";
-        updatedEl.innerHTML = `Last updated: ${escHtml(formatTime(weatherData.updated))}${staleNote} \u2022 Source: NOAA Aviation Weather Center ${btn}`;
+        updatedEl.innerHTML = 'Last updated: ' + escHtml(formatTime(weatherData.updated)) + ' \u2022 Source: NOAA Aviation Weather Center ' + btn;
       }
       // re-bind after innerHTML replace
-      document.getElementById("wxRefresh").addEventListener("click", loadWeather);
+      document.getElementById("wxRefresh").addEventListener("click", function() { loadWeather(true); });
       renderWeather(select.value);
     }
 
@@ -884,8 +904,7 @@
     // Also try the JSON endpoint as primary, text as fallback
     async function loadWindsAloftJson(station, fcst) {
       const url = `${NOAA_BASE}/windtemp?region=sfo&level=low&fcst=${fcst}&format=json`;
-      const r = await fetchWithTimeout(proxyUrl(url));
-      if (!r.ok) throw new Error(`NOAA windtemp ${r.status}`);
+      const r = await fetchViaProxy(url);
       const data = await r.json();
       // JSON returns array of objects with station, altitude, dir, speed, temp
       const stUpper = station.toUpperCase();
@@ -896,8 +915,7 @@
 
     async function loadWindsAloftText(station, fcst) {
       const url = `${NOAA_BASE}/windtemp?region=sfo&level=low&fcst=${fcst}`;
-      const r = await fetchWithTimeout(proxyUrl(url));
-      if (!r.ok) throw new Error(`NOAA windtemp text ${r.status}`);
+      const r = await fetchViaProxy(url);
       const text = await r.text();
       return parseFBWinds(text, station);
     }
@@ -1007,13 +1025,13 @@
     windsFcstSel.addEventListener("change", loadWindsAloft);
 
     select.addEventListener("change", () => renderWeather(select.value));
-    refreshBtn.addEventListener("click", loadWeather);
-    loadWeather();
+    refreshBtn.addEventListener("click", function() { loadWeather(true); });
+    loadWeather(false);
     loadSunData();
     loadWindsAloft();
     loadEvents();
     setInterval(updateAges, 15000);
-    setInterval(loadWeather, REFRESH_INTERVAL);
+    setInterval(function() { loadWeather(false); }, REFRESH_INTERVAL);
 
     /* ========== LOGBOOK ========== */
     const LOGBOOK_KEY = "velvetrunway-logbook";
