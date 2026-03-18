@@ -642,12 +642,13 @@
       refreshBtn.classList.remove("spinning");
 
       var btn = refreshBtn.outerHTML;
+      var noaaLink = '<a href="https://aviationweather.gov/data/metar/" target="_blank" rel="noopener">NOAA Aviation Weather Center</a>';
       if (source === "error" || !weatherData?.updated) {
-        updatedEl.innerHTML = 'Last updated: unavailable <span class="wx-source-note">(all sources failed)</span> \u2022 Source: NOAA Aviation Weather Center ' + btn;
+        updatedEl.innerHTML = 'Last updated: unavailable <span class="wx-source-note">(all sources failed)</span> \u2022 Source: ' + noaaLink + ' ' + btn;
       } else if (source === "live") {
-        updatedEl.innerHTML = 'Last updated: ' + escHtml(formatTime(weatherData.updated)) + ' <span class="wx-source-note" style="color:var(--teal)">(live)</span> \u2022 Source: NOAA Aviation Weather Center ' + btn;
+        updatedEl.innerHTML = 'Last updated: ' + escHtml(formatTime(weatherData.updated)) + ' <span class="wx-source-note" style="color:var(--teal)">(live)</span> \u2022 Source: ' + noaaLink + ' ' + btn;
       } else {
-        updatedEl.innerHTML = 'Last updated: ' + escHtml(formatTime(weatherData.updated)) + ' \u2022 Source: NOAA Aviation Weather Center ' + btn;
+        updatedEl.innerHTML = 'Last updated: ' + escHtml(formatTime(weatherData.updated)) + ' \u2022 Source: ' + noaaLink + ' ' + btn;
       }
       // re-bind after innerHTML replace
       document.getElementById("wxRefresh").addEventListener("click", function() { loadWeather(true); });
@@ -969,6 +970,7 @@
         console.warn("Winds JSON API failed:", jsonErr);
         try {
           winds = await loadWindsAloftText(station, fcst);
+          if (!validLine) validLine = `Updated: ${formatTime(new Date().toISOString())}`;
         } catch (textErr) {
           console.warn("Winds text API failed:", textErr);
           // Both live APIs failed, use static cache
@@ -982,7 +984,7 @@
                 temp: w.temp != null ? `${w.temp > 0 ? "+" : ""}${w.temp}°C` : null
               };
             });
-            if (staticData.updated) validLine = `Cached: ${formatTime(staticData.updated)}`;
+            if (staticData.updated) validLine = `Updated: ${formatTime(staticData.updated)}`;
           } catch (staticErr) { console.error("All winds sources failed:", staticErr); }
         }
       }
@@ -1018,7 +1020,7 @@
       windsGrid.innerHTML = html;
 
       const timeStr = validLine || `Forecast: ${fcst}hr`;
-      windsUpdated.textContent = `${timeStr} • Station: ${station} • Source: NOAA Aviation Weather Center — FB Winds`;
+      windsUpdated.innerHTML = `${escHtml(timeStr)} \u2022 Station: ${escHtml(station)} \u2022 Source: <a href="https://aviationweather.gov/data/windtemp/?region=sfo&fcst=${escHtml(fcst)}&level=low" target="_blank" rel="noopener">NOAA Aviation Weather Center \u2014 FB Winds</a>`;
     }
 
     windsStationSel.addEventListener("change", loadWindsAloft);
