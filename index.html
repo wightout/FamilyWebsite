@@ -563,7 +563,7 @@
         var proxied = CORS_PROXIES[i](url);
         try {
           var r = await fetchWithTimeout(proxied);
-          if (r.ok) return r;
+          if (r.ok || r.status === 400) return r;
         } catch (err) {
           console.warn("Proxy " + i + " failed for " + url + ":", err.message);
         }
@@ -572,9 +572,15 @@
     }
 
     async function fetchNoaaJson(url) {
-      var r = await fetchViaProxy(url);
-      if (r.status === 204) return [];
-      return r.json();
+      try {
+        var r = await fetchViaProxy(url);
+        var text = await r.text();
+        if (!text) return [];
+        return JSON.parse(text);
+      } catch (err) {
+        console.warn("NOAA fetch failed for " + url + ":", err.message);
+        return [];
+      }
     }
 
     async function loadWeatherLive() {
@@ -583,6 +589,7 @@
         fetchNoaaJson(`${NOAA_BASE}/metar?ids=${ids}&format=json`),
         fetchNoaaJson(`${NOAA_BASE}/taf?ids=${ids}&format=json`)
       ]);
+      if (!metars.length && !tafs.length) throw new Error("No live data returned");
 
       const metarById = Object.fromEntries(
         metars.map(m => [m.icaoId, { raw: m.rawOb || "", time: m.reportTime || m.obsTime || "" }])
@@ -1028,12 +1035,12 @@
 
     select.addEventListener("change", () => renderWeather(select.value));
     refreshBtn.addEventListener("click", function() { loadWeather(true); });
-    loadWeather(false);
+    loadWeather(true);
     loadSunData();
     loadWindsAloft();
     loadEvents();
     setInterval(updateAges, 15000);
-    setInterval(function() { loadWeather(false); }, REFRESH_INTERVAL);
+    setInterval(function() { loadWeather(true); }, REFRESH_INTERVAL);
 
     /* ========== LOGBOOK ========== */
     const LOGBOOK_KEY = "velvetrunway-logbook";
