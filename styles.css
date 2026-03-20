@@ -398,6 +398,17 @@ main{
 
 .event:first-of-type{border-top:none}
 
+a.event{
+  text-decoration:none;
+  color:inherit;
+  transition:background 0.2s ease;
+}
+
+a.event:hover{
+  background:rgba(42,77,79,0.06);
+  border-radius:0.5rem;
+}
+
 .event-title{
   font-weight:600;
   color:var(--ink);

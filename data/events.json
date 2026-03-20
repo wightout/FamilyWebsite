@@ -19,7 +19,7 @@
       "venue": "Brackett Field Airport (KPOC)",
       "city": "La Verne, CA",
       "description": "Open ramp day for pilots and families. Aircraft displays, free Young Eagles flights for kids, and food trucks on the flight line.",
-      "url": "",
+      "url": "https://dpw.lacounty.gov/avi/airports/brackettfield.aspx",
       "tags": ["Fly-in", "Family"]
     },
     {
@@ -41,7 +41,7 @@
       "venue": "Flabob Airport (KRIR)",
       "city": "Riverside, CA",
       "description": "Classic Saturday morning breakfast fly-in at historic Flabob Airport. Pancake breakfast, vintage aircraft, and a relaxed vintage airfield atmosphere.",
-      "url": "",
+      "url": "https://www.flabobairport.org/events",
       "tags": ["Fly-in", "Family"]
     },
     {
@@ -63,7 +63,7 @@
       "venue": "Cable Airport (KCCB)",
       "city": "Upland, CA",
       "description": "Free community open house at Cable Airport with aircraft static displays, flight school demos, and introductory discovery flights available for booking.",
-      "url": "",
+      "url": "https://cableairport.net/131-2/",
       "tags": ["Family", "Fly-in"]
     }
   ]
