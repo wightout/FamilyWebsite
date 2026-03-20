@@ -1,0 +1,30 @@
+{
+  "updated": "2026-03-20T00:00:00.000Z",
+  "stations": {
+    "KLAX": { "name": "Los Angeles Intl", "lat": 33.9425, "lon": -118.4081, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KBUR": { "name": "Hollywood Burbank", "lat": 34.2007, "lon": -118.3585, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KVNY": { "name": "Van Nuys", "lat": 34.2098, "lon": -118.49, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KSMO": { "name": "Santa Monica", "lat": 34.0158, "lon": -118.4513, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KHHR": { "name": "Hawthorne", "lat": 33.9228, "lon": -118.3352, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KTOA": { "name": "Zamperini (Torrance)", "lat": 33.8034, "lon": -118.3396, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KLGB": { "name": "Long Beach", "lat": 33.8177, "lon": -118.1516, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KSNA": { "name": "John Wayne", "lat": 33.6757, "lon": -117.8682, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KFUL": { "name": "Fullerton", "lat": 33.872, "lon": -117.9783, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KONT": { "name": "Ontario Intl", "lat": 34.056, "lon": -117.6012, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KPOC": { "name": "Brackett Field", "lat": 34.0917, "lon": -117.7831, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KCCB": { "name": "Cable Airport", "lat": 34.1114, "lon": -117.6878, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KRAL": { "name": "Riverside Muni", "lat": 33.9519, "lon": -117.4451, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KCNO": { "name": "Chino", "lat": 33.9747, "lon": -117.6365, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KEMT": { "name": "El Monte", "lat": 34.0861, "lon": -118.0347, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KWHP": { "name": "Whiteman", "lat": 34.2584, "lon": -118.4135, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KPMD": { "name": "Palmdale", "lat": 34.6294, "lon": -118.0845, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KWJF": { "name": "Fox Field (Lancaster)", "lat": 34.7411, "lon": -118.2186, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KCMA": { "name": "Camarillo", "lat": 34.2137, "lon": -119.0943, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KOXR": { "name": "Oxnard", "lat": 34.2008, "lon": -119.2072, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KSBD": { "name": "San Bernardino Intl", "lat": 34.0954, "lon": -117.2354, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KRIR": { "name": "Flabob", "lat": 33.9897, "lon": -117.4111, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KAJO": { "name": "Corona Muni", "lat": 33.8978, "lon": -117.6026, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KSLI": { "name": "Los Alamitos", "lat": 33.79, "lon": -118.0519, "metar": "", "metarTime": "", "flightCategory": "" },
+    "KCRQ": { "name": "Carlsbad", "lat": 33.1283, "lon": -117.2801, "metar": "", "metarTime": "", "flightCategory": "" }
+  }
+}

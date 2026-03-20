@@ -40,6 +40,7 @@
     </div>
     <nav class="site-nav" role="navigation" aria-label="Main navigation">
       <a href="#weather">METAR/TAF</a>
+      <a href="#metar-map">METAR Map</a>
       <a href="#sun">Sun</a>
       <a href="#winds">Winds Aloft</a>
       <a href="#airports">Airports</a>
@@ -101,6 +102,49 @@
       <div class="wx-decoded" id="wxDecoded"></div>
       <p class="fineprint" id="wxUpdated">Last updated: — • Source: NOAA Aviation Weather Center
         <button class="wx-refresh-btn" id="wxRefresh" type="button" title="Refresh weather" aria-label="Refresh weather data">↻ Refresh</button>
+      </p>
+    </section>
+
+    <section id="metar-map" class="section metar-map-section">
+      <div class="section-heading">
+        <h3>SoCal METAR Map</h3>
+        <p>Live flight categories across Southern California — like the LED METAR map on your wall.</p>
+      </div>
+      <div class="metar-map-container">
+        <div class="metar-map-legend">
+          <span class="legend-item"><span class="legend-dot legend-vfr"></span> VFR</span>
+          <span class="legend-item"><span class="legend-dot legend-mvfr"></span> MVFR</span>
+          <span class="legend-item"><span class="legend-dot legend-ifr"></span> IFR</span>
+          <span class="legend-item"><span class="legend-dot legend-lifr"></span> LIFR</span>
+          <span class="legend-item"><span class="legend-dot legend-nodata"></span> No Data</span>
+        </div>
+        <svg id="metarMapSvg" viewBox="0 0 900 740" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="METAR map of Southern California airports">
+          <defs>
+            <filter id="ledGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            <radialGradient id="dotVfr"><stop offset="0%" stop-color="#69f0ae"/><stop offset="100%" stop-color="#00c853"/></radialGradient>
+            <radialGradient id="dotMvfr"><stop offset="0%" stop-color="#82b1ff"/><stop offset="100%" stop-color="#2979ff"/></radialGradient>
+            <radialGradient id="dotIfr"><stop offset="0%" stop-color="#ff8a80"/><stop offset="100%" stop-color="#ff1744"/></radialGradient>
+            <radialGradient id="dotLifr"><stop offset="0%" stop-color="#ea80fc"/><stop offset="100%" stop-color="#d500f9"/></radialGradient>
+            <radialGradient id="dotNodata"><stop offset="0%" stop-color="#bdbdbd"/><stop offset="100%" stop-color="#9e9e9e"/></radialGradient>
+          </defs>
+          <!-- Geographic features rendered by JS -->
+          <g id="mapGeo"></g>
+          <!-- Airport dots and labels rendered by JS -->
+          <g id="mapDots"></g>
+        </svg>
+        <div class="metar-map-popup" id="metarMapPopup">
+          <button class="metar-map-popup-close" id="metarMapPopupClose" aria-label="Close">&times;</button>
+          <div id="metarMapPopupContent"></div>
+        </div>
+      </div>
+      <p class="fineprint" id="metarMapUpdated">Last updated: — • Source: NOAA Aviation Weather Center
+        <button class="wx-refresh-btn" id="metarMapRefresh" type="button" title="Refresh METAR map" aria-label="Refresh METAR map data">↻ Refresh</button>
       </p>
     </section>
 
@@ -1040,7 +1084,321 @@
     loadWindsAloft();
     loadEvents();
     setInterval(updateAges, 15000);
-    setInterval(function() { loadWeather(true); }, REFRESH_INTERVAL);
+    setInterval(function() { loadWeather(true); loadMetarMap(true); }, REFRESH_INTERVAL);
+
+    /* ========== METAR MAP ========== */
+    const MAP_AIRPORTS = [
+      { icao: "KLAX", name: "Los Angeles Intl", lat: 33.9425, lon: -118.4081, lbl: "left" },
+      { icao: "KBUR", name: "Hollywood Burbank", lat: 34.2007, lon: -118.3585, lbl: "right" },
+      { icao: "KVNY", name: "Van Nuys", lat: 34.2098, lon: -118.4900, lbl: "left" },
+      { icao: "KSMO", name: "Santa Monica", lat: 34.0158, lon: -118.4513, lbl: "left" },
+      { icao: "KHHR", name: "Hawthorne", lat: 33.9228, lon: -118.3352, lbl: "right" },
+      { icao: "KTOA", name: "Zamperini (Torrance)", lat: 33.8034, lon: -118.3396, lbl: "below" },
+      { icao: "KLGB", name: "Long Beach", lat: 33.8177, lon: -118.1516, lbl: "right" },
+      { icao: "KSNA", name: "John Wayne", lat: 33.6757, lon: -117.8682, lbl: "right" },
+      { icao: "KFUL", name: "Fullerton", lat: 33.8720, lon: -117.9783, lbl: "right" },
+      { icao: "KONT", name: "Ontario Intl", lat: 34.0560, lon: -117.6012, lbl: "below" },
+      { icao: "KPOC", name: "Brackett Field", lat: 34.0917, lon: -117.7831, lbl: "right" },
+      { icao: "KCCB", name: "Cable Airport", lat: 34.1114, lon: -117.6878, lbl: "above" },
+      { icao: "KRAL", name: "Riverside Muni", lat: 33.9519, lon: -117.4451, lbl: "right" },
+      { icao: "KCNO", name: "Chino", lat: 33.9747, lon: -117.6365, lbl: "right" },
+      { icao: "KEMT", name: "El Monte", lat: 34.0861, lon: -118.0347, lbl: "right" },
+      { icao: "KWHP", name: "Whiteman", lat: 34.2584, lon: -118.4135, lbl: "right" },
+      { icao: "KPMD", name: "Palmdale", lat: 34.6294, lon: -118.0845, lbl: "right" },
+      { icao: "KWJF", name: "Fox Field", lat: 34.7411, lon: -118.2186, lbl: "right" },
+      { icao: "KCMA", name: "Camarillo", lat: 34.2137, lon: -119.0943, lbl: "right" },
+      { icao: "KOXR", name: "Oxnard", lat: 34.2008, lon: -119.2072, lbl: "left" },
+      { icao: "KSBD", name: "San Bernardino Intl", lat: 34.0954, lon: -117.2354, lbl: "right" },
+      { icao: "KRIR", name: "Flabob", lat: 33.9897, lon: -117.4111, lbl: "above" },
+      { icao: "KAJO", name: "Corona Muni", lat: 33.8978, lon: -117.6026, lbl: "below" },
+      { icao: "KSLI", name: "Los Alamitos", lat: 33.7900, lon: -118.0519, lbl: "below" },
+      { icao: "KCRQ", name: "Carlsbad", lat: 33.1283, lon: -117.2801, lbl: "right" }
+    ];
+
+    const MAP_BOUNDS = { latMin: 33.0, latMax: 34.85, lonMin: -119.35, lonMax: -117.1 };
+    const MAP_W = 900, MAP_H = 740;
+    function mapX(lon) { return ((lon - MAP_BOUNDS.lonMin) / (MAP_BOUNDS.lonMax - MAP_BOUNDS.lonMin)) * MAP_W; }
+    function mapY(lat) { return ((MAP_BOUNDS.latMax - lat) / (MAP_BOUNDS.latMax - MAP_BOUNDS.latMin)) * MAP_H; }
+
+    const CAT_GRADIENTS = { VFR: "url(#dotVfr)", MVFR: "url(#dotMvfr)", IFR: "url(#dotIfr)", LIFR: "url(#dotLifr)" };
+    const CAT_COLORS = { VFR: "#00c853", MVFR: "#2979ff", IFR: "#ff1744", LIFR: "#d500f9" };
+    const CAT_STYLES = {
+      VFR: "background:#d4edda;color:#155724",
+      MVFR: "background:#cce5ff;color:#004085",
+      IFR: "background:#f8d7da;color:#721c24",
+      LIFR: "background:#e8d0f0;color:#4a1568"
+    };
+
+    // Simplified SoCal coastline (lon, lat pairs)
+    const COASTLINE = [
+      [-119.30,34.28],[-119.22,34.18],[-119.05,34.08],[-118.78,34.03],
+      [-118.55,34.02],[-118.50,34.01],[-118.42,33.93],[-118.40,33.90],
+      [-118.41,33.86],[-118.42,33.78],[-118.42,33.74],[-118.32,33.71],
+      [-118.19,33.76],[-118.10,33.74],[-117.98,33.66],[-117.93,33.61],
+      [-117.78,33.54],[-117.70,33.46],[-117.62,33.42],[-117.40,33.20],
+      [-117.28,33.13]
+    ];
+
+    // San Gabriel / San Bernardino mountain ridgeline
+    const MOUNTAINS = [
+      [-118.68,34.32],[-118.40,34.34],[-118.15,34.30],[-117.90,34.25],
+      [-117.70,34.20],[-117.50,34.20],[-117.30,34.18],[-117.10,34.15]
+    ];
+
+    function svgPath(points, close) {
+      return points.map(function(p, i) {
+        return (i === 0 ? "M" : "L") + mapX(p[0]).toFixed(1) + "," + mapY(p[1]).toFixed(1);
+      }).join(" ") + (close ? " Z" : "");
+    }
+
+    // Draw geographic features
+    function drawMapGeo() {
+      var geo = document.getElementById("mapGeo");
+      if (!geo) return;
+      // Ocean fill — polygon from coast + bottom-left corner
+      var oceanPts = COASTLINE.concat([[-117.28, MAP_BOUNDS.latMin], [MAP_BOUNDS.lonMin, MAP_BOUNDS.latMin], [MAP_BOUNDS.lonMin, 34.28]]);
+      var ocean = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      ocean.setAttribute("d", svgPath(oceanPts, true));
+      ocean.setAttribute("fill", "rgba(42,77,79,0.06)");
+      ocean.setAttribute("stroke", "none");
+      geo.appendChild(ocean);
+
+      // Coastline
+      var coast = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      coast.setAttribute("d", svgPath(COASTLINE));
+      coast.setAttribute("fill", "none");
+      coast.setAttribute("stroke", "#8fb3b1");
+      coast.setAttribute("stroke-width", "2");
+      coast.setAttribute("opacity", "0.5");
+      geo.appendChild(coast);
+
+      // Mountains
+      var mtns = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      mtns.setAttribute("d", svgPath(MOUNTAINS));
+      mtns.setAttribute("fill", "none");
+      mtns.setAttribute("stroke", "#c86b4a");
+      mtns.setAttribute("stroke-width", "1.5");
+      mtns.setAttribute("stroke-dasharray", "6 4");
+      mtns.setAttribute("opacity", "0.35");
+      geo.appendChild(mtns);
+
+      // Mountain label
+      var mtLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      mtLabel.setAttribute("x", mapX(-118.15).toFixed(1));
+      mtLabel.setAttribute("y", (mapY(34.30) - 12).toFixed(1));
+      mtLabel.setAttribute("text-anchor", "middle");
+      mtLabel.setAttribute("class", "metar-label");
+      mtLabel.setAttribute("fill", "#c86b4a");
+      mtLabel.setAttribute("opacity", "0.5");
+      mtLabel.setAttribute("font-size", "10");
+      mtLabel.textContent = "San Gabriel Mtns";
+      geo.appendChild(mtLabel);
+
+      var mtLabel2 = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      mtLabel2.setAttribute("x", mapX(-117.40).toFixed(1));
+      mtLabel2.setAttribute("y", (mapY(34.19) - 12).toFixed(1));
+      mtLabel2.setAttribute("text-anchor", "middle");
+      mtLabel2.setAttribute("class", "metar-label");
+      mtLabel2.setAttribute("fill", "#c86b4a");
+      mtLabel2.setAttribute("opacity", "0.5");
+      mtLabel2.setAttribute("font-size", "10");
+      mtLabel2.textContent = "San Bernardino Mtns";
+      geo.appendChild(mtLabel2);
+
+      // Pacific label
+      var pacLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      pacLabel.setAttribute("x", mapX(-118.85).toFixed(1));
+      pacLabel.setAttribute("y", mapY(33.55).toFixed(1));
+      pacLabel.setAttribute("text-anchor", "middle");
+      pacLabel.setAttribute("class", "metar-label");
+      pacLabel.setAttribute("fill", "#8fb3b1");
+      pacLabel.setAttribute("opacity", "0.4");
+      pacLabel.setAttribute("font-size", "14");
+      pacLabel.setAttribute("font-style", "italic");
+      pacLabel.textContent = "Pacific Ocean";
+      geo.appendChild(pacLabel);
+    }
+
+    drawMapGeo();
+
+    let metarMapData = null;
+    const mapSvg = document.getElementById("metarMapSvg");
+    const mapDotsGroup = document.getElementById("mapDots");
+    const mapPopup = document.getElementById("metarMapPopup");
+    const mapPopupContent = document.getElementById("metarMapPopupContent");
+    const mapPopupClose = document.getElementById("metarMapPopupClose");
+    const mapUpdatedEl = document.getElementById("metarMapUpdated");
+    const mapRefreshBtn = document.getElementById("metarMapRefresh");
+
+    function getFlightCat(raw) {
+      if (!raw) return "";
+      var d = decodeMetar(raw);
+      if (!d) return "";
+      var vis = d.visibility ? parseFloat(d.visibility) : 99;
+      var ceil = d.ceiling ? parseInt(d.ceiling.replace(/,/g, ""), 10) : 99999;
+      if (vis < 1 || ceil < 500) return "LIFR";
+      if (vis < 3 || ceil < 1000) return "IFR";
+      if (vis <= 5 || ceil <= 3000) return "MVFR";
+      return "VFR";
+    }
+
+    function renderMetarMap() {
+      while (mapDotsGroup.firstChild) mapDotsGroup.removeChild(mapDotsGroup.firstChild);
+
+      MAP_AIRPORTS.forEach(function(ap) {
+        var x = mapX(ap.lon);
+        var y = mapY(ap.lat);
+        var station = metarMapData?.stations?.[ap.icao];
+        var cat = station?.flightCategory || (station?.metar ? getFlightCat(station.metar) : "");
+        var fill = CAT_GRADIENTS[cat] || "url(#dotNodata)";
+        var glowColor = CAT_COLORS[cat] || "#9e9e9e";
+
+        // Outer glow circle
+        var glow = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        glow.setAttribute("cx", x.toFixed(1));
+        glow.setAttribute("cy", y.toFixed(1));
+        glow.setAttribute("r", "16");
+        glow.setAttribute("fill", glowColor);
+        glow.setAttribute("opacity", "0.25");
+        glow.setAttribute("class", "metar-dot-glow");
+        mapDotsGroup.appendChild(glow);
+
+        // Main dot
+        var dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        dot.setAttribute("cx", x.toFixed(1));
+        dot.setAttribute("cy", y.toFixed(1));
+        dot.setAttribute("r", "9");
+        dot.setAttribute("fill", fill);
+        dot.setAttribute("stroke", "rgba(255,255,255,0.8)");
+        dot.setAttribute("stroke-width", "2");
+        dot.setAttribute("filter", "url(#ledGlow)");
+        dot.setAttribute("class", "metar-dot");
+        dot.setAttribute("data-icao", ap.icao);
+        dot.addEventListener("click", function(e) { showMapPopup(ap, x, y); e.stopPropagation(); });
+        mapDotsGroup.appendChild(dot);
+
+        // Label
+        var label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        var dx = 0, dy = 0, anchor = "start";
+        if (ap.lbl === "left") { dx = -14; anchor = "end"; }
+        else if (ap.lbl === "right") { dx = 14; anchor = "start"; }
+        else if (ap.lbl === "above") { dy = -16; anchor = "middle"; }
+        else if (ap.lbl === "below") { dy = 20; anchor = "middle"; }
+        else { dx = 14; anchor = "start"; }
+        label.setAttribute("x", (x + dx).toFixed(1));
+        label.setAttribute("y", (y + dy + 4).toFixed(1));
+        label.setAttribute("text-anchor", anchor);
+        label.setAttribute("class", "metar-label");
+        label.textContent = ap.icao;
+        mapDotsGroup.appendChild(label);
+      });
+    }
+
+    function showMapPopup(ap, svgX, svgY) {
+      var station = metarMapData?.stations?.[ap.icao];
+      var cat = station?.flightCategory || (station?.metar ? getFlightCat(station.metar) : "");
+      var catStyle = CAT_STYLES[cat] || "background:#eee;color:#666";
+      var catLabel = cat || "N/A";
+
+      var html = '<h4>' + escHtml(ap.name) + '</h4>';
+      html += '<span class="popup-ident">' + escHtml(ap.icao) + '</span>';
+      html += '<span class="popup-cat" style="' + catStyle + '">' + escHtml(catLabel) + '</span>';
+
+      if (station?.metar) {
+        html += '<div class="popup-metar">' + escHtml(station.metar) + '</div>';
+        var d = decodeMetar(station.metar);
+        if (d) {
+          html += '<div class="popup-details">';
+          if (d.wind) html += '<div><span class="popup-detail-label">Wind</span><br><span class="popup-detail-value">' + escHtml(d.wind) + '</span></div>';
+          if (d.visibility) html += '<div><span class="popup-detail-label">Visibility</span><br><span class="popup-detail-value">' + escHtml(d.visibility) + '</span></div>';
+          if (d.ceiling) html += '<div><span class="popup-detail-label">Ceiling</span><br><span class="popup-detail-value">' + escHtml(d.ceiling) + '</span></div>';
+          else if (d.clouds) html += '<div><span class="popup-detail-label">Sky</span><br><span class="popup-detail-value">' + escHtml(d.clouds[0]) + '</span></div>';
+          if (d.temp) html += '<div><span class="popup-detail-label">Temp</span><br><span class="popup-detail-value">' + escHtml(d.temp) + '</span></div>';
+          if (d.altimeter) html += '<div><span class="popup-detail-label">Altimeter</span><br><span class="popup-detail-value">' + escHtml(d.altimeter) + '</span></div>';
+          if (d.weather) html += '<div><span class="popup-detail-label">Weather</span><br><span class="popup-detail-value">' + escHtml(d.weather) + '</span></div>';
+          html += '</div>';
+        }
+        if (station.metarTime) {
+          var age = Date.now() - new Date(station.metarTime).getTime();
+          html += '<p class="popup-age">Report age: ' + formatAge(age) + '</p>';
+        }
+      } else {
+        html += '<p style="margin:0.8rem 0 0;color:var(--ink-soft)">No recent METAR available.</p>';
+      }
+
+      mapPopupContent.innerHTML = html;
+
+      // Position popup relative to container
+      var rect = mapSvg.getBoundingClientRect();
+      var scaleX = rect.width / MAP_W;
+      var scaleY = rect.height / MAP_H;
+      var pixelX = svgX * scaleX;
+      var pixelY = svgY * scaleY;
+
+      // Prefer right side, flip if too close to edge
+      var popupLeft = pixelX + 20;
+      if (popupLeft + 360 > rect.width) popupLeft = pixelX - 380;
+      if (popupLeft < 10) popupLeft = 10;
+      var popupTop = pixelY - 40;
+      if (popupTop < 10) popupTop = 10;
+
+      mapPopup.style.left = popupLeft + "px";
+      mapPopup.style.top = popupTop + "px";
+      mapPopup.classList.add("is-open");
+    }
+
+    function closeMapPopup() { mapPopup.classList.remove("is-open"); }
+
+    mapPopupClose.addEventListener("click", function(e) { e.stopPropagation(); closeMapPopup(); });
+    document.addEventListener("click", function(e) {
+      if (mapPopup.classList.contains("is-open") && !mapPopup.contains(e.target) && !e.target.classList.contains("metar-dot")) {
+        closeMapPopup();
+      }
+    });
+
+    async function loadMetarMap(tryLive) {
+      // Try static cache first
+      try {
+        var r = await fetch("data/metar-map.json", { cache: "no-store" });
+        if (r.ok) {
+          metarMapData = await r.json();
+        }
+      } catch (e) { console.warn("Static METAR map cache failed:", e); }
+
+      // Then try live NOAA fetch for fresher data
+      if (tryLive) {
+        try {
+          var ids = MAP_AIRPORTS.map(function(a) { return a.icao; }).join(",");
+          var metars = await fetchNoaaJson(NOAA_BASE + "/metar?ids=" + ids + "&format=json");
+          if (metars.length > 0) {
+            var liveStations = {};
+            MAP_AIRPORTS.forEach(function(ap) { liveStations[ap.icao] = { name: ap.name, lat: ap.lat, lon: ap.lon, metar: "", metarTime: "", flightCategory: "" }; });
+            metars.forEach(function(m) {
+              if (liveStations[m.icaoId]) {
+                liveStations[m.icaoId].metar = m.rawOb || "";
+                liveStations[m.icaoId].metarTime = m.reportTime || m.obsTime || "";
+                liveStations[m.icaoId].flightCategory = m.fltcat || "";
+              }
+            });
+            metarMapData = { updated: new Date().toISOString(), stations: liveStations };
+          }
+        } catch (e) { console.warn("Live METAR map fetch failed:", e); }
+      }
+
+      renderMetarMap();
+
+      // Update footer
+      var btn = mapRefreshBtn.outerHTML;
+      var noaaLink = '<a href="https://aviationweather.gov/data/metar/" target="_blank" rel="noopener">NOAA Aviation Weather Center</a>';
+      if (metarMapData?.updated) {
+        mapUpdatedEl.innerHTML = 'Last updated: ' + escHtml(formatTime(metarMapData.updated)) + ' \u2022 25 stations \u2022 Source: ' + noaaLink + ' ' + btn;
+      } else {
+        mapUpdatedEl.innerHTML = 'Last updated: — \u2022 Source: ' + noaaLink + ' ' + btn;
+      }
+      document.getElementById("metarMapRefresh").addEventListener("click", function() { loadMetarMap(true); });
+    }
+
+    loadMetarMap(true);
 
     /* ========== LOGBOOK ========== */
     const LOGBOOK_KEY = "velvetrunway-logbook";
