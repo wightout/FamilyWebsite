@@ -39,8 +39,8 @@
       </div>
     </div>
     <nav class="site-nav" role="navigation" aria-label="Main navigation">
-      <a href="#weather">METAR/TAF</a>
       <a href="#metar-map">METAR Map</a>
+      <a href="#weather">METAR/TAF</a>
       <a href="#sun">Sun</a>
       <a href="#winds">Winds Aloft</a>
       <a href="#airports">Airports</a>
@@ -58,6 +58,49 @@
   </header>
 
   <main id="main-content">
+    <section id="metar-map" class="section metar-map-section">
+      <div class="section-heading">
+        <h3>SoCal METAR Map</h3>
+        <p>Live flight categories across Southern California — like the LED METAR map on your wall.</p>
+      </div>
+      <div class="metar-map-container">
+        <div class="metar-map-legend">
+          <span class="legend-item"><span class="legend-dot legend-vfr"></span> VFR</span>
+          <span class="legend-item"><span class="legend-dot legend-mvfr"></span> MVFR</span>
+          <span class="legend-item"><span class="legend-dot legend-ifr"></span> IFR</span>
+          <span class="legend-item"><span class="legend-dot legend-lifr"></span> LIFR</span>
+          <span class="legend-item"><span class="legend-dot legend-nodata"></span> No Data</span>
+        </div>
+        <svg id="metarMapSvg" viewBox="0 0 900 740" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="METAR map of Southern California airports">
+          <defs>
+            <filter id="ledGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+              <feMerge>
+                <feMergeNode in="blur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            <radialGradient id="dotVfr"><stop offset="0%" stop-color="#69f0ae"/><stop offset="100%" stop-color="#00c853"/></radialGradient>
+            <radialGradient id="dotMvfr"><stop offset="0%" stop-color="#82b1ff"/><stop offset="100%" stop-color="#2979ff"/></radialGradient>
+            <radialGradient id="dotIfr"><stop offset="0%" stop-color="#ff8a80"/><stop offset="100%" stop-color="#ff1744"/></radialGradient>
+            <radialGradient id="dotLifr"><stop offset="0%" stop-color="#ea80fc"/><stop offset="100%" stop-color="#d500f9"/></radialGradient>
+            <radialGradient id="dotNodata"><stop offset="0%" stop-color="#bdbdbd"/><stop offset="100%" stop-color="#9e9e9e"/></radialGradient>
+          </defs>
+          <!-- Geographic features rendered by JS -->
+          <g id="mapGeo"></g>
+          <!-- Airport dots and labels rendered by JS -->
+          <g id="mapDots"></g>
+        </svg>
+        <div class="metar-map-popup" id="metarMapPopup">
+          <button class="metar-map-popup-close" id="metarMapPopupClose" aria-label="Close">&times;</button>
+          <div id="metarMapPopupContent"></div>
+        </div>
+      </div>
+      <p class="fineprint" id="metarMapUpdated">Last updated: — • Source: NOAA Aviation Weather Center
+        <button class="wx-refresh-btn" id="metarMapRefresh" type="button" title="Refresh METAR map" aria-label="Refresh METAR map data">↻ Refresh</button>
+      </p>
+    </section>
+
     <section id="weather" class="section weather">
       <div class="section-heading">
         <h3>Local METAR &amp; TAF</h3>
@@ -102,49 +145,6 @@
       <div class="wx-decoded" id="wxDecoded"></div>
       <p class="fineprint" id="wxUpdated">Last updated: — • Source: NOAA Aviation Weather Center
         <button class="wx-refresh-btn" id="wxRefresh" type="button" title="Refresh weather" aria-label="Refresh weather data">↻ Refresh</button>
-      </p>
-    </section>
-
-    <section id="metar-map" class="section metar-map-section">
-      <div class="section-heading">
-        <h3>SoCal METAR Map</h3>
-        <p>Live flight categories across Southern California — like the LED METAR map on your wall.</p>
-      </div>
-      <div class="metar-map-container">
-        <div class="metar-map-legend">
-          <span class="legend-item"><span class="legend-dot legend-vfr"></span> VFR</span>
-          <span class="legend-item"><span class="legend-dot legend-mvfr"></span> MVFR</span>
-          <span class="legend-item"><span class="legend-dot legend-ifr"></span> IFR</span>
-          <span class="legend-item"><span class="legend-dot legend-lifr"></span> LIFR</span>
-          <span class="legend-item"><span class="legend-dot legend-nodata"></span> No Data</span>
-        </div>
-        <svg id="metarMapSvg" viewBox="0 0 900 740" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="METAR map of Southern California airports">
-          <defs>
-            <filter id="ledGlow" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
-              <feMerge>
-                <feMergeNode in="blur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-            <radialGradient id="dotVfr"><stop offset="0%" stop-color="#69f0ae"/><stop offset="100%" stop-color="#00c853"/></radialGradient>
-            <radialGradient id="dotMvfr"><stop offset="0%" stop-color="#82b1ff"/><stop offset="100%" stop-color="#2979ff"/></radialGradient>
-            <radialGradient id="dotIfr"><stop offset="0%" stop-color="#ff8a80"/><stop offset="100%" stop-color="#ff1744"/></radialGradient>
-            <radialGradient id="dotLifr"><stop offset="0%" stop-color="#ea80fc"/><stop offset="100%" stop-color="#d500f9"/></radialGradient>
-            <radialGradient id="dotNodata"><stop offset="0%" stop-color="#bdbdbd"/><stop offset="100%" stop-color="#9e9e9e"/></radialGradient>
-          </defs>
-          <!-- Geographic features rendered by JS -->
-          <g id="mapGeo"></g>
-          <!-- Airport dots and labels rendered by JS -->
-          <g id="mapDots"></g>
-        </svg>
-        <div class="metar-map-popup" id="metarMapPopup">
-          <button class="metar-map-popup-close" id="metarMapPopupClose" aria-label="Close">&times;</button>
-          <div id="metarMapPopupContent"></div>
-        </div>
-      </div>
-      <p class="fineprint" id="metarMapUpdated">Last updated: — • Source: NOAA Aviation Weather Center
-        <button class="wx-refresh-btn" id="metarMapRefresh" type="button" title="Refresh METAR map" aria-label="Refresh METAR map data">↻ Refresh</button>
       </p>
     </section>
 
