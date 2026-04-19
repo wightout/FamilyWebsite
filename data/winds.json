@@ -1,25 +1,25 @@
 {
-  "updated": "2026-04-19T19:33:33.205Z",
+  "updated": "2026-04-19T20:24:44.779Z",
   "winds": {
     "ONT_06": [
       {
-        "dir": "L&V",
-        "speed": "<5",
+        "dir": 240,
+        "speed": 9,
         "temp": null
       },
       {
-        "dir": 170,
-        "speed": 12,
-        "temp": 11
+        "dir": 180,
+        "speed": 14,
+        "temp": 12
       },
       {
         "dir": 170,
-        "speed": 19,
-        "temp": 6
+        "speed": 15,
+        "temp": 7
       },
       {
         "dir": 180,
-        "speed": 20,
+        "speed": 16,
         "temp": 0
       },
       {
@@ -28,85 +28,21 @@
         "temp": -14
       },
       {
-        "dir": 200,
-        "speed": 28,
-        "temp": -28
+        "dir": 210,
+        "speed": 21,
+        "temp": -27
       }
     ],
     "WJF_06": [
       {
-        "dir": 180,
-        "speed": 8,
-        "temp": 11
-      },
-      {
-        "dir": 180,
-        "speed": 8,
-        "temp": 11
-      },
-      {
-        "dir": 180,
-        "speed": 20,
-        "temp": 6
-      },
-      {
-        "dir": 190,
-        "speed": 22,
-        "temp": 1
-      },
-      {
         "dir": 200,
-        "speed": 24,
-        "temp": -15
-      },
-      {
-        "dir": 200,
-        "speed": 29,
-        "temp": -28
-      }
-    ],
-    "SBA_06": [
-      {
-        "dir": 140,
-        "speed": 5,
-        "temp": null
-      },
-      {
-        "dir": 150,
-        "speed": 13,
-        "temp": 10
-      },
-      {
-        "dir": 180,
         "speed": 15,
-        "temp": 6
-      },
-      {
-        "dir": 190,
-        "speed": 19,
-        "temp": 0
+        "temp": 13
       },
       {
         "dir": 200,
-        "speed": 24,
-        "temp": -15
-      },
-      {
-        "dir": 210,
-        "speed": 29,
-        "temp": -27
-      }
-    ],
-    "SAN_06": [
-      {
-        "dir": "L&V",
-        "speed": "<5",
-        "temp": null
-      },
-      {
-        "dir": 170,
-        "speed": 16,
-        "temp": 12
+        "speed": 15,
+        "temp": 13
       },
       {
         "dir": 170,
@@ -114,83 +50,147 @@
         "temp": 7
       },
       {
-        "dir": 170,
-        "speed": 16,
-        "temp": 1
+        "dir": 180,
+        "speed": 18,
+        "temp": 0
       },
       {
         "dir": 190,
-        "speed": 17,
+        "speed": 24,
         "temp": -14
       },
       {
-        "dir": 190,
+        "dir": 210,
         "speed": 25,
+        "temp": -27
+      }
+    ],
+    "SBA_06": [
+      {
+        "dir": "L&V",
+        "speed": "<5",
+        "temp": null
+      },
+      {
+        "dir": 140,
+        "speed": 13,
+        "temp": 11
+      },
+      {
+        "dir": 160,
+        "speed": 12,
+        "temp": 6
+      },
+      {
+        "dir": 180,
+        "speed": 18,
+        "temp": -1
+      },
+      {
+        "dir": 210,
+        "speed": 22,
+        "temp": -14
+      },
+      {
+        "dir": 230,
+        "speed": 20,
+        "temp": -26
+      }
+    ],
+    "SAN_06": [
+      {
+        "dir": 220,
+        "speed": 5,
+        "temp": null
+      },
+      {
+        "dir": 180,
+        "speed": 14,
+        "temp": 12
+      },
+      {
+        "dir": 160,
+        "speed": 17,
+        "temp": 7
+      },
+      {
+        "dir": 170,
+        "speed": 15,
+        "temp": 1
+      },
+      {
+        "dir": 180,
+        "speed": 16,
+        "temp": -14
+      },
+      {
+        "dir": 220,
+        "speed": 16,
         "temp": -27
       }
     ],
     "ONT_12": [
       {
-        "dir": 230,
-        "speed": 7,
+        "dir": "L&V",
+        "speed": "<5",
         "temp": null
       },
       {
-        "dir": 170,
-        "speed": 14,
+        "dir": 190,
+        "speed": 12,
         "temp": 12
       },
       {
         "dir": 180,
-        "speed": 17,
+        "speed": 18,
         "temp": 7
       },
       {
         "dir": 180,
-        "speed": 17,
-        "temp": 0
+        "speed": 20,
+        "temp": 1
       },
       {
         "dir": 190,
-        "speed": 20,
-        "temp": -14
+        "speed": 19,
+        "temp": -13
       },
       {
-        "dir": 220,
-        "speed": 18,
-        "temp": -27
+        "dir": 240,
+        "speed": 15,
+        "temp": -25
       }
     ],
     "WJF_12": [
       {
-        "dir": 190,
-        "speed": 15,
+        "dir": 200,
+        "speed": 17,
         "temp": 13
       },
       {
-        "dir": 190,
-        "speed": 15,
+        "dir": 200,
+        "speed": 17,
         "temp": 13
-      },
-      {
-        "dir": 170,
-        "speed": 19,
-        "temp": 7
       },
       {
         "dir": 180,
         "speed": 18,
-        "temp": 0
+        "temp": 7
       },
       {
-        "dir": 190,
-        "speed": 22,
-        "temp": -14
-      },
-      {
-        "dir": 220,
+        "dir": 180,
         "speed": 21,
-        "temp": -26
+        "temp": 1
+      },
+      {
+        "dir": 200,
+        "speed": 22,
+        "temp": -13
+      },
+      {
+        "dir": 240,
+        "speed": 18,
+        "temp": -25
       }
     ],
     "SBA_12": [
@@ -200,61 +200,61 @@
         "temp": null
       },
       {
-        "dir": 140,
+        "dir": 160,
         "speed": 12,
-        "temp": 10
-      },
-      {
-        "dir": 170,
-        "speed": 12,
-        "temp": 6
+        "temp": 11
       },
       {
         "dir": 180,
-        "speed": 19,
+        "speed": 17,
+        "temp": 6
+      },
+      {
+        "dir": 190,
+        "speed": 23,
         "temp": 0
       },
       {
         "dir": 210,
-        "speed": 22,
-        "temp": -14
+        "speed": 23,
+        "temp": -13
       },
       {
-        "dir": 240,
-        "speed": 18,
+        "dir": 230,
+        "speed": 27,
         "temp": -25
       }
     ],
     "SAN_12": [
       {
-        "dir": 200,
-        "speed": 5,
+        "dir": "L&V",
+        "speed": "<5",
         "temp": null
+      },
+      {
+        "dir": 190,
+        "speed": 12,
+        "temp": 13
+      },
+      {
+        "dir": 170,
+        "speed": 18,
+        "temp": 8
       },
       {
         "dir": 180,
         "speed": 15,
-        "temp": 12
-      },
-      {
-        "dir": 170,
-        "speed": 17,
-        "temp": 7
-      },
-      {
-        "dir": 170,
-        "speed": 15,
         "temp": 1
       },
       {
-        "dir": 190,
-        "speed": 15,
-        "temp": -14
+        "dir": 200,
+        "speed": 12,
+        "temp": -13
       },
       {
-        "dir": 230,
-        "speed": 14,
-        "temp": -27
+        "dir": 260,
+        "speed": 12,
+        "temp": -25
       }
     ],
     "ONT_24": [
@@ -264,60 +264,60 @@
         "temp": null
       },
       {
-        "dir": 200,
-        "speed": 10,
+        "dir": 180,
+        "speed": 9,
         "temp": 11
       },
       {
-        "dir": 190,
-        "speed": 18,
+        "dir": 180,
+        "speed": 16,
         "temp": 6
       },
       {
-        "dir": 190,
-        "speed": 19,
-        "temp": 1
-      },
-      {
-        "dir": 220,
-        "speed": 18,
-        "temp": -12
-      },
-      {
-        "dir": 240,
-        "speed": 24,
-        "temp": -24
-      }
-    ],
-    "WJF_24": [
-      {
-        "dir": 210,
-        "speed": 15,
-        "temp": 11
-      },
-      {
-        "dir": 210,
-        "speed": 15,
-        "temp": 11
-      },
-      {
         "dir": 200,
-        "speed": 17,
-        "temp": 6
-      },
-      {
-        "dir": 190,
-        "speed": 21,
+        "speed": 18,
         "temp": 0
       },
       {
         "dir": 220,
         "speed": 25,
-        "temp": -13
+        "temp": -12
       },
       {
         "dir": 230,
+        "speed": 26,
+        "temp": -24
+      }
+    ],
+    "WJF_24": [
+      {
+        "dir": 200,
+        "speed": 15,
+        "temp": 11
+      },
+      {
+        "dir": 200,
+        "speed": 15,
+        "temp": 11
+      },
+      {
+        "dir": 190,
+        "speed": 19,
+        "temp": 6
+      },
+      {
+        "dir": 200,
+        "speed": 21,
+        "temp": 0
+      },
+      {
+        "dir": 220,
         "speed": 30,
+        "temp": -12
+      },
+      {
+        "dir": 230,
+        "speed": 32,
         "temp": -24
       }
     ],
@@ -328,28 +328,28 @@
         "temp": null
       },
       {
-        "dir": 220,
+        "dir": 200,
         "speed": 10,
         "temp": 9
       },
       {
         "dir": 200,
-        "speed": 18,
-        "temp": 5
+        "speed": 17,
+        "temp": 4
       },
       {
-        "dir": 210,
-        "speed": 24,
+        "dir": 200,
+        "speed": 25,
         "temp": -1
       },
       {
         "dir": 220,
-        "speed": 35,
-        "temp": -13
+        "speed": 38,
+        "temp": -12
       },
       {
-        "dir": 230,
-        "speed": 37,
+        "dir": 220,
+        "speed": 43,
         "temp": -24
       }
     ],
@@ -360,28 +360,28 @@
         "temp": null
       },
       {
-        "dir": 200,
-        "speed": 9,
+        "dir": 180,
+        "speed": 8,
         "temp": 12
       },
       {
-        "dir": 190,
-        "speed": 14,
+        "dir": 180,
+        "speed": 11,
         "temp": 7
       },
       {
         "dir": 200,
-        "speed": 14,
+        "speed": 13,
         "temp": 1
       },
       {
-        "dir": 250,
-        "speed": 14,
-        "temp": -12
+        "dir": 230,
+        "speed": 18,
+        "temp": -11
       },
       {
-        "dir": 260,
-        "speed": 20,
+        "dir": 240,
+        "speed": 22,
         "temp": -24
       }
     ]
