@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-15T05:32:47.654Z",
+  "updated": "2026-06-15T11:41:35.857Z",
   "winds": {
     "ONT_06": [
       {
@@ -126,6 +126,134 @@
       {
         "dir": 40,
         "speed": 5,
+        "temp": -18
+      }
+    ],
+    "ONT_12": [
+      {
+        "dir": "L&V",
+        "speed": "<5",
+        "temp": null
+      },
+      {
+        "dir": 270,
+        "speed": 12,
+        "temp": 23
+      },
+      {
+        "dir": 250,
+        "speed": 13,
+        "temp": 15
+      },
+      {
+        "dir": 240,
+        "speed": 18,
+        "temp": 8
+      },
+      {
+        "dir": 250,
+        "speed": 7,
+        "temp": -5
+      },
+      {
+        "dir": 270,
+        "speed": 12,
+        "temp": -19
+      }
+    ],
+    "WJF_12": [
+      {
+        "dir": 260,
+        "speed": 13,
+        "temp": 21
+      },
+      {
+        "dir": 260,
+        "speed": 13,
+        "temp": 21
+      },
+      {
+        "dir": 250,
+        "speed": 11,
+        "temp": 15
+      },
+      {
+        "dir": 250,
+        "speed": 6,
+        "temp": 9
+      },
+      {
+        "dir": 250,
+        "speed": 10,
+        "temp": -6
+      },
+      {
+        "dir": 270,
+        "speed": 19,
+        "temp": -19
+      }
+    ],
+    "SBA_12": [
+      {
+        "dir": 300,
+        "speed": 5,
+        "temp": null
+      },
+      {
+        "dir": 270,
+        "speed": 7,
+        "temp": 20
+      },
+      {
+        "dir": 240,
+        "speed": 10,
+        "temp": 15
+      },
+      {
+        "dir": 250,
+        "speed": 7,
+        "temp": 8
+      },
+      {
+        "dir": 250,
+        "speed": 11,
+        "temp": -6
+      },
+      {
+        "dir": 270,
+        "speed": 18,
+        "temp": -18
+      }
+    ],
+    "SAN_12": [
+      {
+        "dir": 330,
+        "speed": 12,
+        "temp": null
+      },
+      {
+        "dir": 310,
+        "speed": 8,
+        "temp": 22
+      },
+      {
+        "dir": 230,
+        "speed": 5,
+        "temp": 16
+      },
+      {
+        "dir": 200,
+        "speed": 14,
+        "temp": 9
+      },
+      {
+        "dir": 220,
+        "speed": 11,
+        "temp": -7
+      },
+      {
+        "dir": "L&V",
+        "speed": "<5",
         "temp": -18
       }
     ],
