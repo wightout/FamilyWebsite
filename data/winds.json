@@ -1,5 +1,5 @@
 {
-  "updated": "2026-07-17T22:10:44.804Z",
+  "updated": "2026-07-17T23:13:01.189Z",
   "winds": {
     "ONT_06": [
       {
@@ -127,6 +127,134 @@
         "dir": 190,
         "speed": 15,
         "temp": -15
+      }
+    ],
+    "ONT_12": [
+      {
+        "dir": "L&V",
+        "speed": "<5",
+        "temp": null
+      },
+      {
+        "dir": 240,
+        "speed": 8,
+        "temp": 22
+      },
+      {
+        "dir": 230,
+        "speed": 6,
+        "temp": 15
+      },
+      {
+        "dir": 130,
+        "speed": 7,
+        "temp": 10
+      },
+      {
+        "dir": 160,
+        "speed": 10,
+        "temp": -5
+      },
+      {
+        "dir": 200,
+        "speed": 18,
+        "temp": -15
+      }
+    ],
+    "WJF_12": [
+      {
+        "dir": 260,
+        "speed": 9,
+        "temp": 22
+      },
+      {
+        "dir": 260,
+        "speed": 9,
+        "temp": 22
+      },
+      {
+        "dir": 220,
+        "speed": 13,
+        "temp": 16
+      },
+      {
+        "dir": 180,
+        "speed": 9,
+        "temp": 10
+      },
+      {
+        "dir": 170,
+        "speed": 14,
+        "temp": -5
+      },
+      {
+        "dir": 190,
+        "speed": 20,
+        "temp": -16
+      }
+    ],
+    "SBA_12": [
+      {
+        "dir": 110,
+        "speed": 6,
+        "temp": null
+      },
+      {
+        "dir": 100,
+        "speed": 6,
+        "temp": 21
+      },
+      {
+        "dir": 160,
+        "speed": 9,
+        "temp": 15
+      },
+      {
+        "dir": 190,
+        "speed": 15,
+        "temp": 9
+      },
+      {
+        "dir": 170,
+        "speed": 23,
+        "temp": -5
+      },
+      {
+        "dir": 190,
+        "speed": 28,
+        "temp": -17
+      }
+    ],
+    "SAN_12": [
+      {
+        "dir": 180,
+        "speed": 11,
+        "temp": null
+      },
+      {
+        "dir": "L&V",
+        "speed": "<5",
+        "temp": 22
+      },
+      {
+        "dir": 80,
+        "speed": 5,
+        "temp": 15
+      },
+      {
+        "dir": 90,
+        "speed": 9,
+        "temp": 9
+      },
+      {
+        "dir": 110,
+        "speed": 6,
+        "temp": -4
+      },
+      {
+        "dir": 190,
+        "speed": 12,
+        "temp": -14
       }
     ],
     "ONT_24": [
