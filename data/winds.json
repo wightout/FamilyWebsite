@@ -1,6 +1,134 @@
 {
-  "updated": "2026-07-19T20:36:38.892Z",
+  "updated": "2026-07-19T21:39:34.633Z",
   "winds": {
+    "ONT_06": [
+      {
+        "dir": 240,
+        "speed": 11,
+        "temp": null
+      },
+      {
+        "dir": 210,
+        "speed": 9,
+        "temp": 22
+      },
+      {
+        "dir": 190,
+        "speed": 9,
+        "temp": 16
+      },
+      {
+        "dir": 160,
+        "speed": 7,
+        "temp": 8
+      },
+      {
+        "dir": 140,
+        "speed": 7,
+        "temp": -4
+      },
+      {
+        "dir": 60,
+        "speed": 8,
+        "temp": -14
+      }
+    ],
+    "WJF_06": [
+      {
+        "dir": 220,
+        "speed": 14,
+        "temp": 24
+      },
+      {
+        "dir": 220,
+        "speed": 14,
+        "temp": 24
+      },
+      {
+        "dir": 190,
+        "speed": 12,
+        "temp": 17
+      },
+      {
+        "dir": 190,
+        "speed": 10,
+        "temp": 9
+      },
+      {
+        "dir": 160,
+        "speed": 9,
+        "temp": -3
+      },
+      {
+        "dir": 100,
+        "speed": 5,
+        "temp": -14
+      }
+    ],
+    "SBA_06": [
+      {
+        "dir": 270,
+        "speed": 6,
+        "temp": null
+      },
+      {
+        "dir": "L&V",
+        "speed": "<5",
+        "temp": 21
+      },
+      {
+        "dir": 120,
+        "speed": 9,
+        "temp": 15
+      },
+      {
+        "dir": 150,
+        "speed": 15,
+        "temp": 9
+      },
+      {
+        "dir": 170,
+        "speed": 17,
+        "temp": -3
+      },
+      {
+        "dir": 170,
+        "speed": 15,
+        "temp": -13
+      }
+    ],
+    "SAN_06": [
+      {
+        "dir": 250,
+        "speed": 6,
+        "temp": null
+      },
+      {
+        "dir": 220,
+        "speed": 6,
+        "temp": 22
+      },
+      {
+        "dir": 170,
+        "speed": 8,
+        "temp": 15
+      },
+      {
+        "dir": 170,
+        "speed": 7,
+        "temp": 8
+      },
+      {
+        "dir": "L&V",
+        "speed": "<5",
+        "temp": -4
+      },
+      {
+        "dir": 60,
+        "speed": 8,
+        "temp": -14
+      }
+    ],
     "ONT_12": [
       {
         "dir": 260,
