@@ -10,15 +10,15 @@
     },
     "KCCB": {
       "name": "Cable Airport",
-      "metar": "METAR KCCB 081435Z AUTO 00000KT 10SM CLR 24/13 A3001 RMK AO2",
-      "metarTime": "2026-08-08T14:35:00.000Z",
+      "metar": "METAR KCCB 081455Z AUTO 00000KT 10SM CLR 25/13 A3000 RMK AO2",
+      "metarTime": "2026-08-08T15:00:00.000Z",
       "taf": "",
       "tafTime": ""
     },
     "KRAL": {
       "name": "Riverside Municipal",
-      "metar": "METAR KRAL 081353Z 00000KT 10SM CLR 21/13 A2999 RMK AO2 SLP139 T02110133",
-      "metarTime": "2026-08-08T14:00:00.000Z",
+      "metar": "METAR KRAL 081453Z VRB03KT 10SM CLR 23/14 A2999 RMK AO2 SLP139 T02330144 50007",
+      "metarTime": "2026-08-08T15:00:00.000Z",
       "taf": "",
       "tafTime": ""
     }
