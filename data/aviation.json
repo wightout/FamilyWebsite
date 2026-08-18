@@ -10,8 +10,8 @@
     },
     "KCCB": {
       "name": "Cable Airport",
-      "metar": "METAR KCCB 181850Z AUTO 30007KT 10SM CLR 31/06 A3000 RMK AO2",
-      "metarTime": "2026-08-18T19:00:00.000Z",
+      "metar": "",
+      "metarTime": "",
       "taf": "",
       "tafTime": ""
     },
