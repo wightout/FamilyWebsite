@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-06T06:30:00.000Z",
+  "updated": "2026-10-06T13:35:00.000Z",
   "airports": {
     "KPOC": {
       "name": "Brackett Field",
@@ -10,15 +10,15 @@
     },
     "KCCB": {
       "name": "Cable Airport",
-      "metar": "METAR KCCB 060630Z AUTO 06004KT 10SM CLR 28/09 A2993 RMK AO2",
-      "metarTime": "2026-10-06T06:30:00.000Z",
+      "metar": "METAR KCCB 061335Z AUTO 01006KT 10SM CLR 26/06 A2992 RMK AO2",
+      "metarTime": "2026-10-06T13:35:00.000Z",
       "taf": "",
       "tafTime": ""
     },
     "KRAL": {
       "name": "Riverside Municipal",
-      "metar": "METAR KRAL 060553Z AUTO 04004KT 10SM CLR 29/12 A2990 RMK AO2 SLP107 T02890122 10383 20283 51008",
-      "metarTime": "2026-10-06T06:00:00.000Z",
+      "metar": "METAR KRAL 061253Z AUTO 07003KT 10SM CLR 24/11 A2989 RMK AO2 SLP104 T02390111",
+      "metarTime": "2026-10-06T13:00:00.000Z",
       "taf": "",
       "tafTime": ""
     }
