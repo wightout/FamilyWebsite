@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-31T06:00:00.000Z",
+  "updated": "2026-10-31T11:00:00.000Z",
   "airports": {
     "KPOC": {
       "name": "Brackett Field",
@@ -17,8 +17,8 @@
     },
     "KRAL": {
       "name": "Riverside Municipal",
-      "metar": "METAR KRAL 310553Z AUTO 00000KT 10SM BKN042 OVC050 16/13 A2993 RMK AO2 SLP123 T01610133 10178 20161 50006",
-      "metarTime": "2026-10-31T06:00:00.000Z",
+      "metar": "METAR KRAL 311053Z AUTO 07003KT 10SM FEW039 14/13 A2991 RMK AO2 SLP117 T01390128",
+      "metarTime": "2026-10-31T11:00:00.000Z",
       "taf": "",
       "tafTime": ""
     }
